@@ -18,7 +18,7 @@ bool isCorrect(int guess, int answer);
 int main(void) {
     //
    srand(time(0)); 
-
+   puts("Hello Name");
    //
    guessGame();
 } // end main
