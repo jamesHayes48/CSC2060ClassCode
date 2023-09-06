@@ -9,7 +9,7 @@ int main(void) {
    int dCount = 0; 
    int fCount = 0; 
 
-   puts("Enter the letter grades.");
+   puts("Enter the letter grades."); // Prompt user :)
    puts("Enter the EOF character to end input.");
    int grade = 0; // one grade 
 
