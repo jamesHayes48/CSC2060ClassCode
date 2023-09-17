@@ -12,9 +12,11 @@
 #define const double DISCOUNT 50
 
 // Intialize and declare functions
-void printRentalPropertyInfo(unsigned int minNights, unsigned int maxNights, unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount);
+void printRentalPropertyInfo(unsigned int minNights, unsigned int maxNights, 
+	unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount);
 int getValidInt(int min, int max);
-double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nighs, double charges);
+double calculateCharges(unsigned int nights, unsigned int interval1Nights, 
+	unsigned int interval2Nighs, double charges);
 void printNightsCharges(unsigned int nights, double charges);
 
 // Main function
