@@ -4,23 +4,24 @@
 
 // Constants
 #define const SENTINEL_NEG1 -1
-#define int unsigned const MIN_RENTAL_NIGHTS 1
-#define unsigned int const MAX_RENTAL_NIGHTS 14
-#define unsigned int const INTERVAL_1_NIGHTS 3
-#define unsigned int const INTERVAL_2_NIGHTS 6
-#define double const RENTAL_RATE 400
-#define double const DISCOUNT 50
+#define const unsigned MIN_RENTAL_NIGHTS 1
+#define const unsigned int MAX_RENTAL_NIGHTS 14
+#define const unsigned int INTERVAL_1_NIGHTS 3
+#define const unsigned int INTERVAL_2_NIGHTS 6
+#define const double RENTAL_RATE 400
+#define const double DISCOUNT 50
 
 // Intialize and declare functions
-void printRentalPropertyInfo(unsigned int minNights, (unsigned) int maxNights, unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount);
+void printRentalPropertyInfo(unsigned int minNights, unsigned int maxNights, unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount);
 int getValidInt(int min, int max);
-double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nighs, double);
-void printNightsCharges((unsigned) int nights, double charges);
+double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nighs, double charges);
+void printNightsCharges(unsigned int nights, double charges);
 
 // Main function
 int main(void) {
-	printf("Working");
+	
 }
+
 
 void printRentalPropertyInfo(unsigned int minNights, unsigned int maxNights, unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount) {
 
@@ -30,7 +31,7 @@ int getValidInt(int min, int max) {
 
 }
 
-double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nighs, double) {
+double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nighs, double charges) {
 
 }
 
