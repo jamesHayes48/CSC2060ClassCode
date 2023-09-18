@@ -25,13 +25,27 @@ int main(void) {
 
 	// User Inputs
 	int userNights = 0;
-	double usercharges = 0;
-	//int scanfRef = 0;
+	double userCharges = 0;
+	
+	// Rental Property Owner Summary
+	int totalNights = 0;
+	double totalCharges = 0;
 
 	do {
 		printRentalPropertyInfo(MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, 
 			INTERVAL_1_NIGHTS, INTERVAL_2_NIGHTS, RENTAL_RATE, DISCOUNT);
 		userNights = getValidInt(MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, SENTINEL_NEG1);
+		while ((getchar()) != '\n');
+		if (userNights == 0) {
+			printf("Please enter an integer between %d and %d\n", 
+				MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS);
+		}
+		else if (userNights == SENTINEL_NEG1) {
+			// End program
+		}
+		else {
+			userCharges = calculateCharges(userNights, INTERVAL_1_NIGHTS, INTERVAL_2_NIGHTS, RENTAL_RATE, DISCOUNT);
+		}
 	} while (!(userNights == SENTINEL_NEG1));
 }
 
@@ -49,10 +63,20 @@ void printRentalPropertyInfo(unsigned int minNights, unsigned int maxNights,
 }
 
 int getValidInt(int min, int max, int sentinel) {
-
+	int input = 0;
+	scanf("%d", &input);
+	if (min <= input <= max) {
+		return input;
+	}
+	else if (input == sentinel) {
+		return sentinel;
+	}
+	else {
+		return 0;
+	}
 }
 
-double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nighs, double charges) {
+double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nighs, double rate, double discount) {
 
 }
 
