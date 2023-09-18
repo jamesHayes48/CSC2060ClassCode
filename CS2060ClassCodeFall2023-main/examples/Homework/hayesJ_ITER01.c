@@ -22,19 +22,30 @@ int main(void) {
 	double const DISCOUNT = 50;
 
 	// User Inputs
-	int userNights;
-	double usercharges;
+	int userNights = 0;
+	double usercharges = 0;
+	//int scanfRef = 0;
 
 	do {
-		printRentalPropertyInfo(MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, INTERVAL_1_NIGHTS, 
-			INTERVAL_2_NIGHTS, RENTAL_RATE, DISCOUNT);
-
+		printRentalPropertyInfo(MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, 
+			INTERVAL_1_NIGHTS, INTERVAL_2_NIGHTS, RENTAL_RATE, DISCOUNT);
+		scanf("%d", &userNights);
+		while (getchar() != '\n');
+		getValidInt();
 	} while (!(userNights == SENTINAL_NEG1));
 }
 
 
-void printRentalPropertyInfo(unsigned int minNights, unsigned int maxNights, unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount) {
-	printf("");
+void printRentalPropertyInfo(unsigned int minNights, unsigned int maxNights, 
+	unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount) {
+	printf("Rental Property can be rented for %d to %d nights.\n", 
+		minNights, interval2Nights);
+	printf("$%.2f rate a night for the first %d nights\n", 
+		rate, interval1Nights);
+	printf("$%.2f discount rate a night for nights %d to %d\n", 
+		discount, interval1Nights, interval2Nights);
+	printf("$%.2f discount rate for each remaining night over %d\n", 
+		discount *2, interval2Nights);
 }
 
 int getValidInt(int min, int max) {
