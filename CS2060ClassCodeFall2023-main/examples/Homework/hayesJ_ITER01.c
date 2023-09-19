@@ -9,7 +9,7 @@ void printRentalPropertyInfo(unsigned int minNights, unsigned int maxNights,
 // Return valid input 
 int getValidInt(int min, int max, int sentinel);
 double calculateCharges(unsigned int nights, unsigned int interval1Nights, 
-	unsigned int interval2Nighs, double charges);
+	unsigned int interval2Nighs, double rate, double charges);
 void printNightsCharges(unsigned int nights, double charges);
 
 // Main function
@@ -42,9 +42,13 @@ int main(void) {
 		}
 		else if (userNights == SENTINEL_NEG1) {
 			// End program
+			puts("Rental property summary");
+			printNightsCharges(totalNights, totalCharges);
 		}
 		else {
 			userCharges = calculateCharges(userNights, INTERVAL_1_NIGHTS, INTERVAL_2_NIGHTS, RENTAL_RATE, DISCOUNT);
+			totalCharges += userCharges;
+			printNightsCharges(userNights, userCharges);
 		}
 	} while (!(userNights == SENTINEL_NEG1));
 }
@@ -65,21 +69,30 @@ void printRentalPropertyInfo(unsigned int minNights, unsigned int maxNights,
 int getValidInt(int min, int max, int sentinel) {
 	int input = 0;
 	scanf("%d", &input);
-	if (min <= input <= max) {
+	if (min <= input <= max || input == sentinel) {
 		return input;
-	}
-	else if (input == sentinel) {
-		return sentinel;
 	}
 	else {
 		return 0;
 	}
 }
 
-double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nighs, double rate, double discount) {
-
+double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount) {
+	int count = 1;
+	double charges = 0;
+	while (!(count > nights)) {
+		charges += rate;
+		if (count > interval1Nights) {
+			charges -= discount;
+			if (count > interval2Nights) {
+				charges -= discount;
+			}
+		}
+		count++;
+	}
+	return charges;
 }
 
 void printNightsCharges(unsigned int nights, double charges) {
-
+	printf("Nights: %d Charge: $%.2f\n", nights, charges);
 }
