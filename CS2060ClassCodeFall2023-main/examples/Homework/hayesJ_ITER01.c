@@ -46,7 +46,9 @@ int main(void) {
 			printNightsCharges(totalNights, totalCharges);
 		}
 		else {
-			userCharges = calculateCharges(userNights, INTERVAL_1_NIGHTS, INTERVAL_2_NIGHTS, RENTAL_RATE, DISCOUNT);
+			userCharges = calculateCharges(userNights, INTERVAL_1_NIGHTS, INTERVAL_2_NIGHTS, 
+				RENTAL_RATE, DISCOUNT);
+			totalNights += userNights;
 			totalCharges += userCharges;
 			printNightsCharges(userNights, userCharges);
 		}
