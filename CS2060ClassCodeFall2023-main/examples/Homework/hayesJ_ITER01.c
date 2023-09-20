@@ -62,7 +62,7 @@ int main(void) {
 
 		// Print error message
 		if (userNights == ERROR_USER) {
-			printf("Please enter a number between %d and %d\n", 
+			printf("Please enter a number between %d and %d\n\n", 
 				MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS);
 		}
 		// End Program
