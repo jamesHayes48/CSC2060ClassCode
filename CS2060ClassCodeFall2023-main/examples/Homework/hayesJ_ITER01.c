@@ -1,8 +1,14 @@
 /*
 Name: James Hayes
 Class: CSC 2060
-
+Project Name: UCCS Air
+OS: Windows 10 and Windows 11
+Description: This program first prints the prompt for how much the user will be charged and what intervals
+apply the appropriate discount. The program prompts the user for the number of nights and then calculates the charge
+based on the discounts. When the sentinel value is entered by the property owner, then the total amount of nights
+and charges will be displayed.
 */
+
 // Header files
 #include <stdio.h>
 #include <stdlib.h>
@@ -125,28 +131,50 @@ int getValidInt(int min, int max, int sentinel) {
 }
 
 /*
-Calculate the charges 
+Calculate the charges using the discount
+Parameters: int nights, 1st interval of nights, 2nd intervals of nights, charge rate, and discount
+Return: the final charge after applying discount 
 */
 double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount) {
+	// Intialize count
 	int count = 1;
+
+	// Intialize charges
 	double charges = 0;
+
+	// Loop until count is greater than number of nights
 	while (!(count > nights)) {
+		
+		// Add charge each time
 		charges += rate;
+
+		// If count is greater than 1st interval apply discount
 		if (count > interval1Nights) {
 			charges -= discount;
+
+			// If count is greatert than 2nd interval apply discount
 			if (count > interval2Nights) {
 				charges -= discount;
 			}
 		}
+
+		// Iterate count
 		count++;
 	}
 	return charges;
 }
 
+/*
+Print the number of nights and the charges for those nights
+Parameters: int nights (user input) and charges
+Return: Does not return, prints out summary of nights and charges
+*/
 void printNightsCharges(unsigned int nights, double charges) {
+	// If no rentals were made, then print then no rentals were made
 	if (nights == charges) {
 		puts("\nThere were no rentals\n");
 	}
+	//  If there were inputs, output the result
 	else {
 		printf("\nNights: %d Charge: $%.2f\n", nights, charges);
 	}
