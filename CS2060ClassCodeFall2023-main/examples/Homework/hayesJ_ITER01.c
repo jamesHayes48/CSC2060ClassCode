@@ -137,7 +137,7 @@ Return: the final charge after applying discount
 */
 double calculateCharges(unsigned int nights, unsigned int interval1Nights, unsigned int interval2Nights, double rate, double discount) {
 	// Intialize count
-	int count = 1;
+	int unsigned count = 1;
 
 	// Intialize charges
 	double charges = 0;
