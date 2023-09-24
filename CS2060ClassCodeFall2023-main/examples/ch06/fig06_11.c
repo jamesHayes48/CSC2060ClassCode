@@ -6,18 +6,25 @@
 // function prototypes
 void modifyArray(int b[], size_t size); 
 void modifyElement(int e);              
- 
+void printArray(const int b[],size_t size);
+
 // function main begins program execution
 int main(void) {
    int a[SIZE] = {0, 1, 2, 3, 4}; // initialize array a
 
+   // Print the address of the first element in array a
+   printf("%d\n", a);
+   printf("%d\n", &a[0]);
+   
    puts("Effects of passing entire array by reference:\n\nThe "
       "values of the original array are:");
 
    // output original array
-   for (size_t i = 0; i < SIZE; ++i) { 
-      printf("%3d", a[i]);
-   } 
+  // for (size_t i = 0; i < SIZE; ++i) { 
+    //  printf("%3d", a[i]);
+   //}
+
+   printArray(a, SIZE);
 
    puts(""); // outputs a newline
 
@@ -25,10 +32,12 @@ int main(void) {
    puts("The values of the modified array are:");
 
    // output modified array
+   /*
    for (size_t i = 0; i < SIZE; ++i) {
       printf("%3d", a[i]);
    } 
-
+   */
+   printArray(a, SIZE);
    // output value of a[3]
    printf("\n\n\nEffects of passing array element "
       "by value:\n\nThe value of a[3] is %d\n", a[3]);
@@ -54,7 +63,11 @@ void modifyElement(int e) {
    printf("Value in modifyElement is %d\n", e);            
 } 
 
-
+void printArray(const int b[], size_t size) {
+    for (size_t i = 0; i < size; ++i) {
+        printf("%3d", b[i]);
+    }
+}
 
 /**************************************************************************
  * (C) Copyright 1992-2021 by Deitel & Associates, Inc. and               *
