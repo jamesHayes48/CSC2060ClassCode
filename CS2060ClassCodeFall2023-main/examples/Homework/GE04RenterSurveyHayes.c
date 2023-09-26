@@ -8,7 +8,8 @@
 // Function prototypes
 void printSurveyInformation(int minRating, int maxRating, const char* categories[], size_t totalCategories);
 void printCategories(const char* categories[], size_t totalCategories);
-void getRatings(int minRating, int maxRating, int maxRenter, int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
+void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
+int getValidInt(int minRating, int maxRating);
 
 // Main function
 int main(void) {
@@ -18,13 +19,12 @@ int main(void) {
 	int count = 0;
 
 	const char *surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
-	const int rentalSurvey[MAX_RENTER][RENTER_SURVEY_CATEGORIES] = {0};
+	int rentalSurvey[MAX_RENTER][RENTER_SURVEY_CATEGORIES] = {0};
 
-	printSurveyInformation(MAX_RATING, MIN_RATING, surveyCategories, RENTER_SURVEY_CATEGORIES);
-
-	//do {
-
-	//} while (!(count == MAX_RENTER));
+	printSurveyInformation(MIN_RATING, MAX_RATING, surveyCategories, RENTER_SURVEY_CATEGORIES);
+	getRatings(MIN_RATING, MAX_RATING, rentalSurvey, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
+	
+	//printRatings(rentalSurvey, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
 }
 
 void printSurveyInformation(int minRating, int maxRating, const char* categories[], size_t totalCategories) {
@@ -44,23 +44,34 @@ void printCategories(const char* categories[], size_t totalCategories)
     puts(""); // start new line of output
 }
 
-void getRatings(int minRating, int maxRating, int maxRenter, int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
+void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
+	int const errorScan = 0;
 	for (size_t i = 0; i < totalUsers; ++i) {
+		printf("Survey %zu\n", i+1);
 		for (size_t j = 0; j < totalCategories; ++j) {
-			survey[i][j] = getValidInt(minRating, maxRating);
+			int scanRef = 0;
+			while (scanRef == 0) {
+				survey[i][j] = getValidInt(minRating, maxRating);
+				while ((getchar() != '\n'));
+				scanRef = survey[i][j];
+				if (scanRef == errorScan) {
+					printf("Please enter a number rating between %d and %d\n", minRating, maxRating);
+				}
+			}
+			
 		}
 	}
 }
 
-int getValidInt(int min, int max) {
-	double input = 0;
+int getValidInt(int minRating, int maxRating) {
+	int input = 0;
 	int errorReturn = 0;
 
 	// Scan for user input, place into input
-	scanf("%.1f", &input);
+	scanf("%d", &input);
 
 	// Return the user input if it is within the range or
-	if (min <= input && input <= max) {
+	if (minRating <= input && input <= maxRating) {
 		return input;
 	}
 	// Return an error value to print error message
@@ -68,5 +79,4 @@ int getValidInt(int min, int max) {
 		return errorReturn;
 	}
 }
-
 
