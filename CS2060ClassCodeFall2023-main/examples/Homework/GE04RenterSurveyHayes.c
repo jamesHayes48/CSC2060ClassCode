@@ -12,6 +12,7 @@ void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGOR
 int getValidInt(int minRating, int maxRating);
 void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
 void calculateCategoryAverages(int averages[], int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
+void printAverages();
 
 // Main function
 int main(void) {
@@ -95,5 +96,10 @@ void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t tot
 }
 
 void calculateCategoryAverages(int averages[], int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
-
+	for (size_t i = 0; i < totalUsers; ++i) {
+		for (size_t j = 0; j < totalCategories; ++j ) {
+			double averageValue = (survey[i][j]);
+			averages[j] += averageValue;
+		}
+	}
 }
