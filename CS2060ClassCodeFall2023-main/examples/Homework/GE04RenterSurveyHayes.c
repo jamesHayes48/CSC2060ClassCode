@@ -10,7 +10,8 @@ void printSurveyInformation(int minRating, int maxRating, const char* categories
 void printCategories(const char* categories[], size_t totalCategories);
 void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
 int getValidInt(int minRating, int maxRating);
-void printSurveyResults(int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
+void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
+void calculateCategoryAverages(int averages[], int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
 
 // Main function
 int main(void) {
@@ -21,12 +22,13 @@ int main(void) {
 	// Intialize and declare both arrays
 	const char *surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
 	int rentalSurvey[MAX_RENTER][RENTER_SURVEY_CATEGORIES] = {0};
+	int averageCategories[RENTER_SURVEY_CATEGORIES] = {0};
 
 	printSurveyInformation(MIN_RATING, MAX_RATING, surveyCategories, RENTER_SURVEY_CATEGORIES);
-	printCategories(surveyCategories, RENTER_SURVEY_CATEGORIES);
 	getRatings(MIN_RATING, MAX_RATING, rentalSurvey, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
-	
-	//printSurveyResults(rentalSurvey, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
+	printCategories(surveyCategories, RENTER_SURVEY_CATEGORIES);
+	printSurveyResults(rentalSurvey, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
+	calculateCategoryAverages(averageCategories, rentalSurvey, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
 }
 
 void printSurveyInformation(int minRating, int maxRating, const char* categories[], size_t totalCategories) {
@@ -82,3 +84,16 @@ int getValidInt(int minRating, int maxRating) {
 	}
 }
 
+void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
+	for (size_t i = 0; i < totalUsers; ++i) {
+		printf("Survey %zu:", i + 1);
+		for (size_t j = 0; j < totalCategories; ++j) {
+			printf("%30u", survey[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void calculateCategoryAverages(int averages[], int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
+
+}
