@@ -8,11 +8,11 @@
 // Function prototypes
 void printSurveyInformation(int minRating, int maxRating, const char* categories[], size_t totalCategories);
 void printCategories(const char* categories[], size_t totalCategories);
-void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
+void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], const char* categories[], size_t totalUsers, size_t totalCategories);
 int getValidInt(int minRating, int maxRating);
 void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
-void calculateCategoryAverages(int averages[], int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
-void printAverages();
+void calculateCategoryAverages(double averages[], int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
+void printCategoryData(const double averages[], size_t totalUsers, size_t totalCategories);
 
 // Main function
 int main(void) {
@@ -23,13 +23,19 @@ int main(void) {
 	// Intialize and declare both arrays
 	const char *surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
 	int rentalSurvey[MAX_RENTER][RENTER_SURVEY_CATEGORIES] = {0};
-	int averageCategories[RENTER_SURVEY_CATEGORIES] = {0};
+	double averageCategories[RENTER_SURVEY_CATEGORIES] = {0};
 
 	printSurveyInformation(MIN_RATING, MAX_RATING, surveyCategories, RENTER_SURVEY_CATEGORIES);
-	getRatings(MIN_RATING, MAX_RATING, rentalSurvey, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
+
+	getRatings(MIN_RATING, MAX_RATING, rentalSurvey, surveyCategories, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
+
 	printCategories(surveyCategories, RENTER_SURVEY_CATEGORIES);
+
 	printSurveyResults(rentalSurvey, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
+
 	calculateCategoryAverages(averageCategories, rentalSurvey, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
+
+	printCategoryData(averageCategories, MAX_RENTER, RENTER_SURVEY_CATEGORIES);
 }
 
 void printSurveyInformation(int minRating, int maxRating, const char* categories[], size_t totalCategories) {
@@ -49,11 +55,12 @@ void printCategories(const char* categories[], size_t totalCategories)
     puts(""); // start new line of output
 }
 
-void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
+void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], const char* categories[], size_t totalUsers, size_t totalCategories) {
 	int const errorScan = 0;
 	for (size_t i = 0; i < totalUsers; ++i) {
 		printf("Survey %zu\n", i+1);
 		for (size_t j = 0; j < totalCategories; ++j) {
+			printf("Enter your rating for %s\n", categories[j]);
 			int scanRef = 0;
 			while (scanRef == 0) {
 				survey[i][j] = getValidInt(minRating, maxRating);
@@ -95,11 +102,17 @@ void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t tot
 	}
 }
 
-void calculateCategoryAverages(int averages[], int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
+void calculateCategoryAverages(double averages[], int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
 	for (size_t i = 0; i < totalUsers; ++i) {
 		for (size_t j = 0; j < totalCategories; ++j ) {
-			double averageValue = (survey[i][j]);
-			averages[j] += averageValue;
+			averages[j] += ((double) (survey[i][j]) / totalUsers);
 		}
+	}
+}
+
+void printCategoryData(const double averages[], size_t totalUsers, size_t totalCategories) {
+	printf("%s", "Rating Averages:\t");
+	for (size_t i = 0; i < totalCategories; ++i) {
+		printf("%.1f\t", averages[i]);
 	}
 }
