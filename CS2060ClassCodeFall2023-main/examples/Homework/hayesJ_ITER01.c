@@ -33,7 +33,7 @@ void printNightsCharges(unsigned int nights, double charges);
 int main(void) {
 	// Constants used for calculation and input
 	int const SENTINEL_NEG1 = -1;
-	int unsigned const MIN_RENTAL_NIGHTS = 1;
+	unsigned int const MIN_RENTAL_NIGHTS = 1;
 	unsigned int const MAX_RENTAL_NIGHTS = 14;
 	unsigned int const INTERVAL_1_NIGHTS = 3;
 	unsigned int const INTERVAL_2_NIGHTS = 6;
