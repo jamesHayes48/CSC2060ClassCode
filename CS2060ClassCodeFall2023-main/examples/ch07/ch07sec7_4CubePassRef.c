@@ -6,19 +6,24 @@
 
 int cubePass1(int number);
 int cubePass2(int * numberPtr);
+//void func(const int* numberPtr);
+//void func(const int* const numberPtr);
 
 int main(void) {
 
 	int numberMain = 5;
 	int result = 0;
-	
+	// Print variable in main
 	printf ("In main before cubePass1  numberMain = %d\n", numberMain);
 	printf("&numberMain = %p\n", &numberMain);
+	// Pass numberMain by value
 	result = cubePass1(numberMain);
 	printf ("In main after cubePass1  numberMain = %d\n", numberMain);
 	printf ("Result = %d\n", result);
+	// Pass numberMain by reference
 	printf("\nIn main before cubePass2  numberMain = %d\n", numberMain);
 	result = cubePass2(&numberMain);
+	// Print pass by reference
 	printf("\nIn main after cubePass2  numberMain = %d\n", numberMain);
 	printf("result = %d\n", result);
 
