@@ -17,6 +17,13 @@ struct  employee {
 	double hourlySalary;
 };
 
+typedef struct faculty {
+	char name[NAME_SIZE];
+	int numberofstudent;
+	double salary;
+};
+
+
 void enterEmployees(struct employee* employeeArr, int maxEmployees);
 void passStructByValue(struct employee aEmployee);
 void passStructByReference(struct employee* employeePtr);
@@ -176,8 +183,16 @@ void passStructByReference(struct employee* employeeTestPtr)
 {
 	puts("In function call - change values in the structure");
 
-	strncpy(employeeTestPtr->firstName, "Dynamic", NAME_SIZE);
-	employeeTestPtr->hourlySalary = 100.00;
+	//strncpy(employeeTestPtr->firstName, "Dynamic", NAME_SIZE);
+	//employeeTestPtr->hourlySalary = 100.00;
+
+	printf("%s", "Please enter salary: ");
+	scanf("%lf", &(employeeTestPtr->hourlySalary));
+	
+	while ((getchar() != '\n'));
+	
+	printf("%s", "Please enter name: ");
+	fgets(employeeTestPtr->firstName, NAME_SIZE, stdin);
 
 	printf("Employee's first name = %s\n", employeeTestPtr->firstName);
 	printf("Employee's hourly salary = %3.2f\n\n", employeeTestPtr->hourlySalary);
