@@ -56,3 +56,4 @@ void displayOrganization(Property* propertyPtr) {
 	printf("The rental rate is %d and the discount is %d\n", (propertyPtr->rentalRate), (propertyPtr->discount));
 	printf("The name of the property is %s, the location is %s\n", (propertyPtr->propertyName), (propertyPtr->propertyLocation));
 }
+
