@@ -25,6 +25,9 @@
 #define MAX_RATE 1000
 #define DISCOUNT_MULTIPLIER 2
 
+// Survey Min and Max
+#define MIN_RATING 1
+#define MAX_RATING 5
 typedef struct {
 	char propertyName[STRING_LENGTH];
 	char propertyLocation[STRING_LENGTH];
@@ -58,7 +61,7 @@ void printSurveyInformation(int minRating, int maxRating, const char* categories
 void printCategories(const char* categories[], size_t totalCategories);
 
 // Loop and add input into 2D array
-void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], const char* categories[], size_t totalUsers, size_t totalCategories);
+void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], const char* categories[], size_t currentUser, size_t totalCategories);
 
 // Get valid input
 int getValidInt(int minRating, int maxRating);
@@ -204,27 +207,43 @@ void scanInt(char* input, int* result) {
 
 void rentalMode(Property* propertyPtr, int sentinel, const char* correctID, const char* correctPasscode, const int unsigned maxAttempts) {
 	bool validSentinel = false;
+	bool surveyExsits = false;
 	int userNights = 0;
 	double currentCharge = 0;
+	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
+	unsigned int currentUser = 0;
 
 	do {
 		displayPropertyInfo(propertyPtr);
-		if (propertyPtr->averages[0] != 0) {
-			puts("Teehee");
+
+		// Display survey if previously existing data exists
+		if (surveyExsits == true) {
+			printSurveyResults((propertyPtr->survey),VACATION_RENTERS, RENTER_SURVEY_CATEGORIES);
 		}
+		
+		// Prompt vacationer for number of nights
 		puts("Enter number of nights");
 		userNights = getValidSentinel(MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, sentinel);
+
+		// If sentinel value is entered, prompt for login
 		if (userNights == sentinel) {
-			login(correctID, correctPasscode, maxAttempts);
-			validSentinel = true;
+			validSentinel = login(correctID, correctPasscode, maxAttempts);
+
+			// Print Final information if login was valid 
+
 		}
 		else {
 			propertyPtr->totalNights += userNights;
 			currentCharge = calculateCharges(userNights, (propertyPtr->interval1), (propertyPtr->interval2), (propertyPtr->rentalRate), (propertyPtr->discount));
 			propertyPtr->totalCharge += currentCharge;
 			printNightsCharges(userNights, currentCharge);
+			
+			printSurveyInformation(MIN_RATING, MAX_RATING, surveyCategories, RENTER_SURVEY_CATEGORIES);
+			getRatings(MIN_RATING, MAX_RATING, (propertyPtr->survey), surveyCategories, currentUser, RENTER_SURVEY_CATEGORIES);
+			surveyExsits = true;
+			currentUser++;
 		}
-	} while (validSentinel == false);
+	} while ((validSentinel == false) && (currentUser < 5));
 }
 
 void displayPropertyInfo(Property* propertyPtr) {
@@ -296,3 +315,96 @@ void printNightsCharges(unsigned int nights, double charges) {
 	}
 }
 
+void printSurveyInformation(int minRating, int maxRating, const char* categories[], size_t totalCategories) {
+	printf("We want your feed back, please enter your rating from %d to %d for each category.\n",
+		minRating, maxRating);
+	printCategories(categories, totalCategories);
+}
+
+/*
+Purpose: Print the categories the user will be rating on
+Parameters: array with categories and the number of categories
+Return: Does not return anything, but prints out the categories horizontally
+*/
+void printCategories(const char* categories[], size_t totalCategories)
+{
+	// Loop to display each category horizontally
+	printf("%s", "Rating Categories:\t");
+	for (size_t surveyCategory = 0; surveyCategory < totalCategories; ++surveyCategory)
+	{
+		printf("\t%zu.%s\t", surveyCategory + 1, categories[surveyCategory]);
+	}
+	// Start new line of output
+	puts("");
+}
+
+void getRatings(int minRating, int maxRating, int survey[][RENTER_SURVEY_CATEGORIES], const char* categories[], size_t currentUser, size_t totalCategories) {
+		// Print current survey
+		printf("Survey %zu\n", currentUser + 1);
+
+		// Iterate through column (categories)
+		for (size_t category = 0; category < totalCategories; ++category) {
+
+			// Print which category will be rated
+			printf("Enter your rating for %s\n", categories[category]);
+			
+			// Store user input into array
+			survey[currentUser][category] = getValidInt(minRating, maxRating);
+			
+		}
+}
+
+
+/*
+Purpose: Print the survey's results
+Parameters: array with survey data, number of users, and number of categories
+Return: Does not return anything but prints results of survey formatted
+*/
+void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
+	// Iterate through rows (users)
+	for (size_t i = 0; i < totalUsers; ++i) {
+		// Print which survey
+		printf("Survey %zu:", i + 1);
+
+		// Iterate through columns (categories)
+		for (size_t j = 0; j < totalCategories; ++j) {
+			// Print the rating for the category formatted
+			printf("%30u", survey[i][j]);
+		}
+		// Print new line
+		printf("\n");
+	}
+}
+
+/*
+Purpose: Calculate the averages for each category and store in array
+Parameters: array with averages, array with survey results, number of users and number of categories
+Return: Does not return anything, but modifies initialized array with averages
+*/
+void calculateCategoryAverages(double averages[], int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories) {
+	// Iterate through rows (users)
+	for (size_t i = 0; i < totalUsers; ++i) {
+
+		// Iterate through columns (categories)
+		for (size_t j = 0; j < totalCategories; ++j) {
+			// Calculate the average for each category and store in array
+			averages[j] += ((double)(survey[i][j]) / totalUsers);
+		}
+	}
+}
+
+/*
+Purpose: Print the averages of categories
+Parameters: constant array with averages, number of users, and number of categories
+Return: Does not return anything, but prints the averages for each category formatted
+*/
+void printCategoryData(const double averages[], size_t totalUsers, size_t totalCategories) {
+	// Print the title
+	printf("%s", "Rating Averages:\t");
+
+	// Iterate through average category data
+	for (size_t i = 0; i < totalCategories; ++i) {
+		// Print the average for the category
+		printf("%.1f\t", averages[i]);
+	}
+}
