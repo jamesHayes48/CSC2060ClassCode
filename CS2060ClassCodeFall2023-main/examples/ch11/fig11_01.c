@@ -6,12 +6,12 @@ int main(void){
    FILE *cfPtr = NULL; // cfPtr = clients.txt file pointer   
 
    // fopen opens the file. Exit the program if unable to create the file 
-   if ((cfPtr = fopen("clients.txt", "w")) == NULL) {
+   if ((cfPtr = fopen("C:\\Users\\jhpip\\Documents\\CSC2060ClassCode\\CS2060ClassCodeFall2023-main\\examples\\ch11\\cFiles\\clients.txt", "a")) == NULL) {
       puts("File could not be opened");
    } 
    else { 
       puts("Enter the account, name, and balance.");
-      puts("Enter EOF to end input.");
+      puts("Enter EOF three times to end input.");
       printf("%s", "? ");
 
       int account = 0; // account number

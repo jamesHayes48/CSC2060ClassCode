@@ -6,7 +6,7 @@ int main(void) {
    FILE *cfPtr = NULL; // cfPtr = clients.txt file pointer
 
    // fopen opens file; exits program if file cannot be opened 
-   if ((cfPtr = fopen("clients.txt", "r")) == NULL) {
+   if ((cfPtr = fopen("C:\\Users\\jhpip\\Documents\\CSC2060ClassCode\\CS2060ClassCodeFall2023-main\\examples\\ch11\\cFiles\\clients.txt", "r")) == NULL) {
       puts("File could not be opened");
    } 
    else { // read account, name and balance from file
