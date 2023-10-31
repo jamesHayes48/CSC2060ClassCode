@@ -151,21 +151,27 @@ void setupProperty(Property* propertyPtr, const int minNights, const int maxNigh
 		propertyPtr->averages[i] = 0;
 	}
 
+	// Ask for property name
 	printf("%s", "Enter name of property: \n");
 	fgets(propertyPtr->propertyName, STRING_LENGTH, stdin);
 
+	// Ask for location of property
 	printf("%s", "Enter location of property: \n");
 	fgets(propertyPtr->propertyLocation, STRING_LENGTH, stdin);
 
+	// Ask for first interval
 	printf("Enter first interval between %d and %d: ", minNights, maxNights);
 	propertyPtr->interval1 = getValidInt(minNights, maxNights);
 
+	// Ask for second interval
 	printf("Enter second interval between %d and %d: ", (propertyPtr->interval1), maxNights);
 	propertyPtr->interval2 = getValidInt((propertyPtr->interval2), maxNights);
 
+	//Ask for rental rate
 	printf("Enter rental rate between %d and %d: ", minRate, maxRate);
 	propertyPtr->rentalRate = getValidInt(minRate, maxRate);
 
+	// Ask for discount
 	printf("Enter a discount between %d and %d: ", minRate, (propertyPtr->rentalRate));
 	propertyPtr->discount = getValidInt(minRate, (propertyPtr->rentalRate));
 }
@@ -224,7 +230,7 @@ void rentalMode(Property* propertyPtr, int sentinel, const char* correctID, cons
 void displayPropertyInfo(Property* propertyPtr) {
 	printf("The first interval is %d, the second is %d\n", (propertyPtr->interval1), (propertyPtr->interval2));
 	printf("The rental rate is %d and the discount is %d\n", (propertyPtr->rentalRate), (propertyPtr->discount));
-	printf("The name of the property is %s, the location is %s\n", (propertyPtr->propertyName), (propertyPtr->propertyLocation));
+	printf("The name of the property is %s the location is %s\n", (propertyPtr->propertyName), (propertyPtr->propertyLocation));
 }
 
 int getValidSentinel(const int min, const int max, const int sentinel) {
