@@ -82,9 +82,7 @@ int main(void) {
 		setupProperty(&property1, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, MIN_RATE, MAX_RATE);
 		rentalMode(&property1, SENTINEL_NEG1, CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
 	}
-	else {
-		return 0;
-	}
+	puts("Exiting Air UCCS...");
 }
 
 bool login(const char* correctID, const char* correctPasscode, const int unsigned maxAttempts) {
