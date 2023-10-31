@@ -75,9 +75,12 @@ void printCategoryData(const double averages[], size_t totalUsers, size_t totalC
 int main(void) {
 	Property property1;
 	bool ownerLogin = login(CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
-	while (ownerLogin == true) {
+	if (ownerLogin == true) {
 		setupProperty(&property1, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, MIN_RATE, MAX_RATE);
 		rentalMode(&property1, SENTINEL_NEG1, CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
+	}
+	else {
+		return 0;
 	}
 }
 
@@ -130,11 +133,23 @@ void removeNewLineChar(char* string) {
 }
 
 void setupProperty(Property* propertyPtr, const int minNights, const int maxNights, const int minRate, const int maxRate) {
+	// Set Data members to zero
 	propertyPtr->totalCharge = 0;
 	propertyPtr->totalNights = 0;
 	propertyPtr->totalRenters = 0;
-	//propertyPtr->averages[] = {0};
-	//propertyPtr->survey[] = {0};
+	
+	// Set survey to zero
+	for (int i = 0; i < VACATION_RENTERS; i++) {
+		for (int j = 0; j < RENTER_SURVEY_CATEGORIES; j++) {
+			propertyPtr->survey[i][j] = 0;
+		}
+		
+	}
+
+	// Set averages to zero
+	for (int i = 0; i < RENTER_SURVEY_CATEGORIES; i++) {
+		propertyPtr->averages[i] = 0;
+	}
 
 	printf("%s", "Enter name of property: \n");
 	fgets(propertyPtr->propertyName, STRING_LENGTH, stdin);
