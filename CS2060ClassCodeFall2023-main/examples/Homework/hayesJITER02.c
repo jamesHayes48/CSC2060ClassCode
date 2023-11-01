@@ -186,10 +186,12 @@ int getValidInt(const int min, const int max) {
 		fgets(inputStr, STRING_LENGTH, stdin);
 		removeNewLineChar(inputStr);
 		scanInt(inputStr, &result);
-
+		// Check if greater than long value
+		// It it is within range, it is valid
 		if ((result <= max) && (result >= min)) {
 			isValid = true;
 		}
+		// If not, print error
 		else {
 			puts("Invalid input, please another number: ");
 		}
@@ -255,11 +257,12 @@ int getValidSentinel(const int min, const int max, const int sentinel) {
 	char inputStr[STRING_LENGTH];
 	int result = 0;
 
+	// Prompt the user for 
 	while (isValid == false) {
 		fgets(inputStr, STRING_LENGTH, stdin);
 		removeNewLineChar(inputStr);
 		scanInt(inputStr, &result);
-
+		// Check if long integer
 		if ((result <= max) && (result >= min)) {
 			isValid = true;
 		}
