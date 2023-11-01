@@ -38,6 +38,7 @@ typedef struct {
 	double totalCharge;
 	int totalNights;
 	int totalRenters;
+	unsigned int currentUser;
 	int survey[VACATION_RENTERS][RENTER_SURVEY_CATEGORIES];
 	double averages[RENTER_SURVEY_CATEGORIES];
 } Property;
@@ -138,6 +139,7 @@ void setupProperty(Property* propertyPtr, const int minNights, const int maxNigh
 	propertyPtr->totalCharge = 0;
 	propertyPtr->totalNights = 0;
 	propertyPtr->totalRenters = 0;
+	propertyPtr->currentUser = 0;
 	
 	// Set survey to zero
 	for (int i = 0; i < VACATION_RENTERS; i++) {
@@ -211,22 +213,23 @@ void rentalMode(Property* propertyPtr, int sentinel, const char* correctID, cons
 	int userNights = 0;
 	double currentCharge = 0;
 	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
-	unsigned int currentUser = 0;
 
 	do {
 		displayPropertyInfo(propertyPtr);
 
 		// Display survey if previously existing data exists
 		if (surveyExsits == true) {
-			printSurveyResults((propertyPtr->survey),VACATION_RENTERS, RENTER_SURVEY_CATEGORIES);
+			printSurveyResults((propertyPtr->survey), (propertyPtr->currentUser), RENTER_SURVEY_CATEGORIES);
 		}
 		
 		// Prompt vacationer for number of nights
-		puts("Enter number of nights");
-		userNights = getValidSentinel(MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, sentinel);
-
+		if ((propertyPtr->currentUser) < VACATION_RENTERS) {
+			puts("Enter number of nights");
+			userNights = getValidSentinel(MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, sentinel);
+		}
+		
 		// If sentinel value is entered, prompt for login
-		if (userNights == sentinel) {
+		if (userNights == sentinel || propertyPtr->currentUser == VACATION_RENTERS) {
 			validSentinel = login(correctID, correctPasscode, maxAttempts);
 
 			// Print Final information if login was valid 
@@ -239,11 +242,11 @@ void rentalMode(Property* propertyPtr, int sentinel, const char* correctID, cons
 			printNightsCharges(userNights, currentCharge);
 			
 			printSurveyInformation(MIN_RATING, MAX_RATING, surveyCategories, RENTER_SURVEY_CATEGORIES);
-			getRatings(MIN_RATING, MAX_RATING, (propertyPtr->survey), surveyCategories, currentUser, RENTER_SURVEY_CATEGORIES);
+			getRatings(MIN_RATING, MAX_RATING, (propertyPtr->survey), surveyCategories, (propertyPtr->currentUser), RENTER_SURVEY_CATEGORIES);
 			surveyExsits = true;
-			currentUser++;
+			propertyPtr->currentUser++;
 		}
-	} while ((validSentinel == false) && (currentUser < 5));
+	} while ((validSentinel == false) && ((propertyPtr->currentUser) <= VACATION_RENTERS));
 }
 
 void displayPropertyInfo(Property* propertyPtr) {
