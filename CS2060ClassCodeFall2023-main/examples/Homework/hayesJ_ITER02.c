@@ -84,7 +84,7 @@ void maxOwnerSetUpt(const int minInterval, const int maxInterval, const double m
 void removeNewLineChar(char* string);
 
 // Prompt set up property
-void setupProperty(Property* propertyPtr, const int minNights, const int maxNights, const int minRate, const int maxRate);
+void setupProperty(Property* propertyPtr, const int minNights, const int maxNights, const int minRate, const int maxRate, const int maxRenters, const int maxCategories);
 
 // Get valid integer, within min and max
 int getValidInt(const int min, const int max);
@@ -139,7 +139,7 @@ int main(void) {
 	// If owner login was successful, prompt for set up property and start rental mode
 	if (ownerLogin == true) {
 		maxOwnerSetUpt(MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, MIN_RATE, MAX_RATE);
-		setupProperty(&property1, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, MIN_RATE, MAX_RATE);
+		setupProperty(&property1, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, MIN_RATE, MAX_RATE, VACATION_RENTERS, RENTER_SURVEY_CATEGORIES);
 		rentalMode(&property1, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, SENTINEL_NEG1, VACATION_RENTERS, RENTER_SURVEY_CATEGORIES, MIN_RATING, MAX_RATING, CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
 	}
 	// Else, print error message
@@ -165,6 +165,8 @@ bool login(const char* correctID, const char* correctPasscode, const int unsigne
 	// Keep prompting for login, until attempts reaches max amount of attempts
 	// Or if user entered login correctly
 	while (attemptCount < maxAttempts && loginStatus == false) {
+		int correct = 0;
+
 		// Prompt user for ID
 		printf("%s", "Enter User ID: ");
 		fgets(userID,STRING_LENGTH,stdin);
@@ -178,12 +180,12 @@ bool login(const char* correctID, const char* correctPasscode, const int unsigne
 		// Print new line
 		puts("");
 
-		// Compare id and passcode, retun 0 if true
+		// Compare id and passcode, return 0 if true
 		int compareId = strcmp(correctID, userID);
 		int comparePasscode = strcmp(correctPasscode, userPasscode);
 
 		// If both are true, return login staus as true
-		if ((compareId == 0) && ( comparePasscode == 0)) {
+		if ((compareId == correct) && ( comparePasscode == correct)) {
 			loginStatus = true;
 			puts("Login Successful");
 		}
@@ -221,10 +223,10 @@ void maxOwnerSetUpt(const int minInterval, const int maxInterval, const double m
 /*
 Purpose: to allow owner to enter information for a property
 Parameters: address of property, min rental nights, max rental nights, 
-min rental rate, and max rental rate
+min rental rate, max rental rate, number of categories, and number of max users
 Return: Does not return value but instead modifies several data members in the property structure
 */
-void setupProperty(Property* propertyPtr, const int minNights, const int maxNights, const int minRate, const int maxRate) {
+void setupProperty(Property* propertyPtr, const int minNights, const int maxNights, const int minRate, const int maxRate, const int maxRenters, const int maxCategories) {
 	// Initialize property data members to zero
 	propertyPtr->totalCharge = 0;
 	propertyPtr->totalNights = 0;
@@ -232,15 +234,15 @@ void setupProperty(Property* propertyPtr, const int minNights, const int maxNigh
 	propertyPtr->currentUser = 0;
 	
 	// Set survey to zero
-	for (int i = 0; i < VACATION_RENTERS; i++) {
-		for (int j = 0; j < RENTER_SURVEY_CATEGORIES; j++) {
+	for (int i = 0; i < maxRenters; i++) {
+		for (int j = 0; j < maxCategories; j++) {
 			propertyPtr->survey[i][j] = 0;
 		}
 		
 	}
 
 	// Set averages to zero
-	for (int i = 0; i < RENTER_SURVEY_CATEGORIES; i++) {
+	for (int i = 0; i < maxCategories; i++) {
 		propertyPtr->averages[i] = 0;
 	}
 
@@ -369,7 +371,7 @@ void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, 
 			printNightsCharges(propertyPtr->totalNights, propertyPtr->totalCharge);
 			
 			// Calculate and print category averages
-			calculateCategoryAverages(propertyPtr->averages, propertyPtr->survey, propertyPtr->currentUser, RENTER_SURVEY_CATEGORIES);
+			calculateCategoryAverages(propertyPtr->averages, propertyPtr->survey, propertyPtr->currentUser, maxCategories);
 			printCategories(surveyCategories, maxCategories);
 			printCategoryData(propertyPtr->averages, propertyPtr->currentUser, maxCategories);
 			puts("");
@@ -389,7 +391,7 @@ void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, 
 			
 			// Prompt user to enter rating for three categories
 			printSurveyInformation(minRating, maxRating, surveyCategories, maxCategories);
-			getRatings(minRating, maxRating, (propertyPtr->survey), surveyCategories, (propertyPtr->currentUser), RENTER_SURVEY_CATEGORIES);
+			getRatings(minRating, maxRating, (propertyPtr->survey), surveyCategories, (propertyPtr->currentUser), maxCategories);
 			surveyExsits = true;
 
 			// Iterate current user to keep track of total users who entered nights and ratings
