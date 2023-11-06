@@ -61,14 +61,14 @@ every category entered by the vacationer. The program will then end.
 typedef struct {
 	char propertyName[STRING_LENGTH];
 	char propertyLocation[STRING_LENGTH];
-	int interval1;
-	int interval2;
-	int rentalRate;
+	unsigned int interval1;
+	unsigned int interval2;
+	unsigned int rentalRate;
 	int discount;
 	double totalCharge;
 	int totalNights;
 	int totalRenters;
-	unsigned int currentUser;
+	int currentUser;
 	int survey[VACATION_RENTERS][RENTER_SURVEY_CATEGORIES];
 	double averages[RENTER_SURVEY_CATEGORIES];
 } Property;
@@ -366,7 +366,8 @@ void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, 
 		if (userNights == sentinel || propertyPtr->currentUser == maxRenters) {
 			validSentinel = login(correctID, correctPasscode, maxAttempts);
 
-			// Print total number of nights booked and total charge
+			// Print total number of renters, nights booked, and total charge
+			printf("Number of renters: %d\n", propertyPtr->currentUser);
 			puts("Number of total nights and total charge: ");
 			printNightsCharges(propertyPtr->totalNights, propertyPtr->totalCharge);
 			
@@ -397,7 +398,7 @@ void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, 
 			// Iterate current user to keep track of total users who entered nights and ratings
 			propertyPtr->currentUser++;
 		}
-	} while ((validSentinel == false) && ((propertyPtr->currentUser) < maxRenters));
+	} while ((validSentinel == false) && ((propertyPtr->currentUser) <= maxRenters));
 }
 
 /*
@@ -469,7 +470,7 @@ Return: Returns a double value in dollars based on number of nights and interval
 */
 double calculateCharges(unsigned int nights, unsigned int interval1, unsigned int interval2, double rate, double discount) {
 	// Intialize count
-	int unsigned count = 1;
+	unsigned int count = 1;
 
 	// Intialize charges
 	double charges = 0;
