@@ -63,6 +63,8 @@ int main(void) {
 		userContinue = yesOrNo();
 		puts("");
 	} while (userContinue == 'y');
+
+	puts("Outputting list to file pets.txt...");
 }
 
 void removeNewLineChar(char* string) {
@@ -134,8 +136,7 @@ void printPet(Pet* headPtr) {
 
 		Pet* currentPtr = headPtr;
 		while (currentPtr != NULL) {
-			printf("Name: %s\n", currentPtr->petName);
-			printf("Age: %d\n", currentPtr->petAge);
+			printf("%s is %d years old\n", currentPtr->petName, currentPtr->petAge);
 			currentPtr = currentPtr->nextPetPtr;
 		}
 	}
@@ -188,4 +189,27 @@ void lowerString(char string[]) {
 	for (size_t stringChar = 0; stringChar < strlen(string); stringChar++) {
 		string[stringChar] = tolower(string[stringChar]);
 	}
+}
+
+void printPetToFile(Pet* headPtr) {
+	FILE* pfPtr = NULL;
+	if ((pfPtr = fopen("C:\\GithubRepos\\CSC2060ClassCode\\CS2060ClassCodeFall2023-main\\examples\\Homework\\pets.txt", "a")) == NULL) {
+		puts("File could not be opened");
+	}
+	else {
+		if (headPtr != NULL) {
+			Pet* currentPtr = headPtr;
+
+			while (currentPtr != NULL) {
+				fprintf(pfPtr, "Name: %s\n", currentPtr->petName);
+				fprintf(pfPtr, "Age: %d\n", currentPtr->petAge);
+				fputs("",pfPtr);
+				currentPtr = currentPtr->nextPetPtr;
+			}
+		}
+		else {
+			puts("No pets");
+		}
+	}
+	fclose(pfPtr);
 }
