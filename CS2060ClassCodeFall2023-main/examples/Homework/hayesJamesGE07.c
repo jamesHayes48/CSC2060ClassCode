@@ -19,52 +19,71 @@ void lowerString(char string[]);
 void printPet(Pet* headPtr);
 char yesOrNo();
 void deletePet(Pet** headPtr, char deleteName[STRING_LENGTH]);
+void printPetToFile(Pet* headPtr);
+void freeRemainingPets(Pet** headPtr);
 
 int main(void) {
+	// Intialize all variables
 	Pet* headMainPetPtr = NULL;
 	char name[STRING_LENGTH] = "";
 	char deleteName[STRING_LENGTH] = "";
 	int age = 0;
 	char userContinue = ' ';
 
+	// Prompt user for name and age of pet and store on
+	// linked list as long as user wants to
 	do {
+		// Ask for name
 		printPet(headMainPetPtr);
 		printf("%s", "Enter name: ");
 		fgets(name, STRING_LENGTH, stdin);
 		removeNewLineChar(name);
 
+		// Ask for age
 		printf("%s", "Enter age: ");
 		scanf("%d", &age);
 
 		while (getchar() != '\n');
 
+		// Insert into list
 		insertPet(&headMainPetPtr, name, age);
 
 		puts("");
 
 		printPet(headMainPetPtr);
+
+		// Ask to continue
 		puts("Continue adding pets?");
 		userContinue = yesOrNo();
 		puts("");
 	} while (userContinue == 'y');
 
+	// Ask user which pet should be deleted as long as
+	// user wants to
 	do {
-
+		// Ask for name of pet to delete
 		puts("Enter name of pet to delete: ");
 		fgets(deleteName, STRING_LENGTH, stdin);
-
 		removeNewLineChar(deleteName);
 
 		deletePet(&headMainPetPtr, deleteName);
 
 		printPet(headMainPetPtr);
-
+		
+		// Prompt to continue deletion
 		puts("Continue deleting pets?");
 		userContinue = yesOrNo();
 		puts("");
 	} while (userContinue == 'y');
 
+	// Print pets to file
 	puts("Outputting list to file pets.txt...");
+	printPet(headMainPetPtr);
+	printPetToFile(headMainPetPtr);
+
+	// Deallocate remaining pets and end program
+	freeRemainingPets(&headMainPetPtr);
+	return 0;
 }
 
 void removeNewLineChar(char* string) {
@@ -75,10 +94,16 @@ void removeNewLineChar(char* string) {
 }
 
 void insertPet(Pet** headPtr, char name[STRING_LENGTH], int age) {
+
+	// Place linked list onto heap
 	Pet* newPetPtr = malloc(sizeof(Pet));
+
+	// Initalize strings for comparison
 	char lowerCurrentName[STRING_LENGTH] = "";
 	char lowerInputName[STRING_LENGTH] = "";
 
+	// Make comparison and insert into list if newPetPtr
+	// exists
 	if (newPetPtr != NULL) {
 		strncpy(newPetPtr->petName, name, STRING_LENGTH);
 		newPetPtr->petAge = age;
@@ -113,7 +138,8 @@ void insertPet(Pet** headPtr, char name[STRING_LENGTH], int age) {
 			// Make comparison again
 			comparison = strcmp(lowerCurrentName, lowerInputName);
 		}
-		// If the name is appears earlier alphabetically, make it first
+		// If the name is appears earlier alphabetically than other names, 
+		// make it first
 		if (previousPtr == NULL) {
 			*headPtr = newPetPtr;
 		}
@@ -131,6 +157,7 @@ void insertPet(Pet** headPtr, char name[STRING_LENGTH], int age) {
 }
 
 void printPet(Pet* headPtr) {
+	// Print pets if there are any pets in list
 	if (headPtr != NULL) {
 		puts("Pets: ");
 
@@ -140,6 +167,7 @@ void printPet(Pet* headPtr) {
 			currentPtr = currentPtr->nextPetPtr;
 		}
 	}
+	// If not, then print message
 	else {
 		puts("No pets");
 	}
@@ -148,6 +176,7 @@ void printPet(Pet* headPtr) {
 char yesOrNo() {
 	char validResponse = '\0';
 
+	// Prompt user until y or n is entered
 	while (validResponse != 'y' && validResponse != 'n') {
 		puts("Enter (y)es or (n)o:");
 		validResponse = getchar();
@@ -155,6 +184,7 @@ char yesOrNo() {
 		validResponse = tolower(validResponse);
 	}
 
+	// Return character to main
 	return validResponse;
 }
 
@@ -192,10 +222,13 @@ void lowerString(char string[]) {
 }
 
 void printPetToFile(Pet* headPtr) {
+
+	// Intialize file pointer and open file
 	FILE* pfPtr = NULL;
 	if ((pfPtr = fopen("C:\\GithubRepos\\CSC2060ClassCode\\CS2060ClassCodeFall2023-main\\examples\\Homework\\pets.txt", "a")) == NULL) {
 		puts("File could not be opened");
 	}
+	// Add pets to file if file does exist
 	else {
 		if (headPtr != NULL) {
 			Pet* currentPtr = headPtr;
@@ -207,9 +240,31 @@ void printPetToFile(Pet* headPtr) {
 				currentPtr = currentPtr->nextPetPtr;
 			}
 		}
+		// If none were found, print message
 		else {
-			puts("No pets");
+			puts("No pets to print to file");
 		}
 	}
 	fclose(pfPtr);
+}
+
+void freeRemainingPets(Pet** headPtr) {
+	// Deallocate memory from pets if memory exists
+	if (*headPtr != NULL) {
+		// Intialize pointers
+		Pet* currentPtr = *headPtr;
+		Pet* nextFreePetPtr = NULL;
+
+		// CurrentPtr is not null, deallocate memory
+		while (currentPtr != NULL) {
+			nextFreePetPtr = currentPtr->nextPetPtr;
+			free(currentPtr);
+			currentPtr = nextFreePetPtr;
+		}
+		*headPtr = NULL;
+	}
+	// If no pets were in the list, print message
+	else {
+		puts("No pets to deallocate memory");
+	}
 }
