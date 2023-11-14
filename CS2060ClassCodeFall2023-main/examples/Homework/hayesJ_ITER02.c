@@ -579,7 +579,7 @@ void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t tot
 			printf("%30u", survey[user][category]);
 		}
 		// Print new line
-		printf("\n");
+		puts("");
 	}
 }
 

@@ -116,7 +116,7 @@ void insertNode(Node** headPtr, int number)
 		// 
 		Node* currentPtr = *headPtr;
 
-		//
+		// 
 		while (currentPtr != NULL && currentPtr->data <= number)
 		{
 			//
