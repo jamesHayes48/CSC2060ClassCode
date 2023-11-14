@@ -326,6 +326,13 @@ converted to integer
 void scanInt(char* input, int* result) {
 	char* endPtr;
 	long intCheck = strtol(input, &endPtr, 10);
+	unsigned int fail = 0;
+
+	// If characters at the end are not integers, set it to fail value
+	if ('\0' != *endPtr) {
+		intCheck = fail;
+	}
+
 	*result = (int)intCheck;
 }
 
