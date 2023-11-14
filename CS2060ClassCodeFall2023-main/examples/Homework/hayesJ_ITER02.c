@@ -38,12 +38,12 @@ every category entered by the vacationer. The program will then end.
 
 // Two dimensional array storage amounts for rows and columns of survey data
 #define VACATION_RENTERS 5
-#define RENTER_SURVEY_CATEGORIES 3
+#define RENTER_SURVEY_CATEGORIES 4
 
 // Rental property login and sentinal values
-#define CORRECT_ID "id1"
-#define CORRECT_PASSCODE "ABCD"
-#define LOGIN_MAX_ATTEMPTS 3
+#define CORRECT_ID "id"
+#define CORRECT_PASSCODE "ab"
+#define LOGIN_MAX_ATTEMPTS 2
 #define SENTINEL_NEG1 -1
 
 // Rental property constant ranges
@@ -342,7 +342,7 @@ void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, 
 	bool surveyExsits = false;
 	int userNights = 0;
 	double currentCharge = 0;
-	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
+	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities", "cat4"};
 	
 	// Allow vacationers to enter number of nights and ratings until sentinel value is entered
 	// or number of vacationers exceed max amount of users 
@@ -519,8 +519,7 @@ Parameters: min rating, max rating, category array, total amount of categories
 Return: Does not return anything, but prints instructions for user
 */
 void printSurveyInformation(int minRating, int maxRating, const char* categories[], size_t totalCategories) {
-	printf("We want your feed back, please enter your rating from %d to %d for each category.\n",
-		minRating, maxRating);
+	printf("We want your feed back, please enter your rating from %d to %d for each category.\n", minRating, maxRating);
 	printCategories(categories, totalCategories);
 }
 
