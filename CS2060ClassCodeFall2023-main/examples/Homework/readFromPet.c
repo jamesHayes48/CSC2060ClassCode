@@ -4,17 +4,17 @@
 #include <ctype.h>
 #include <string.h>
 
-void printPetToFile();
+void readPetFromFile();
 
 int main(void) {
-	printPetToFile();
+	readPetFromFile();
 }
 
-void printPetToFile() {
+void readPetFromFile() {
 
 	// Intialize file pointer and open file
 	FILE* pfPtr = NULL;
-	if ((pfPtr = fopen("C:\\GithubRepos\\CSC2060ClassCode\\CS2060ClassCodeFall2023-main\\examples\\Homework\\pets.txt", "r")) == NULL) {
+	if ((pfPtr = fopen("C:\\Users\\jhpip\\Documents\\CSC2060ClassCode\\CS2060ClassCodeFall2023-main\\examples\\Homework\\pets.txt", "r")) == NULL) {
 		puts("File could not be opened");
 	}
 	// Add pets to file if file does exist
