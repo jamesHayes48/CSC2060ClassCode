@@ -1,4 +1,3 @@
-Pets:
 Name: Astrnomical
 Age: 43
 Name: Bonkus the destroyer
