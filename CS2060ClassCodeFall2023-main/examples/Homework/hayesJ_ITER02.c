@@ -356,6 +356,7 @@ void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, 
 	do {
 		puts("");
 		displayPropertyInfo(propertyPtr, minNights, maxNights);
+		bool validNight = false;
 
 		// Display survey if previously existing data exists
 		if (surveyExsits == true) {
@@ -367,12 +368,20 @@ void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, 
 		if ((propertyPtr->currentUser) < maxRenters) {
 			printf("%s", "Enter number of nights: ");
 			userNights = getValidSentinel(minNights, maxNights, sentinel);
+
+			// Prompt User for login if sentinel value is entered
+			if (userNights == sentinel) {
+				validSentinel = login(correctID, correctPasscode, maxAttempts);
+			}
+			// Set normal validNight to true if other valid inputs were entered
+			else {
+				validNight = true;
+			}
 		}
 		
-		// If sentinel value is entered, prompt for login
-		if (userNights == sentinel || propertyPtr->currentUser == maxRenters) {
-			validSentinel = login(correctID, correctPasscode, maxAttempts);
-
+		// If sentinel value is entered, complete all of these tasks
+		if (validSentinel == true) {
+			
 			// Print total number of renters, nights booked, and total charge
 			printf("Number of renters: %d\n", propertyPtr->currentUser);
 			puts("Number of total nights and total charge: ");
@@ -385,7 +394,7 @@ void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, 
 			puts("");
 		}
 		// If number of nights entered, caculate charge and get rating
-		else {
+		else if (validNight == true){
 			
 			// Add to total amount of nights booked of property
 			propertyPtr->totalNights += userNights;
@@ -405,7 +414,7 @@ void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, 
 			// Iterate current user to keep track of total users who entered nights and ratings
 			propertyPtr->currentUser++;
 		}
-	} while ((validSentinel == false) && ((propertyPtr->currentUser) <= maxRenters));
+	} while ((validSentinel == false) && ((propertyPtr->currentUser) < maxRenters));
 }
 
 /*
