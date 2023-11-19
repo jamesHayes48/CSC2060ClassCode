@@ -278,7 +278,7 @@ Purpose: To get user input with between range
 Parameters: min and max
 Return: a valid integer within range of min and max and not above or below long int
 */
-int getValidInt(const int min, const int max) {
+int getValidInt(int min, int max) {
 
 	// Set isValid to false
 	bool isValid = false;
@@ -342,8 +342,8 @@ Parameters: address of property, min rental nights, max rental nights, sentinel 
 max categories,correct id, correct passcode, and max attempts
 Return: Does not return a value, but handles the renter's user story of entering nights and ratings
 */
-void rentalMode(Property* propertyPtr,const int minNights, const int maxNights, const int sentinel,
-	const int maxRenters, const int maxCategories, const int minRating, const int maxRating,
+void rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentinel,
+	int maxRenters, int maxCategories, int minRating, int maxRating,
 	const char* correctID, const char* correctPasscode, const int unsigned maxAttempts) {
 	bool validSentinel = false;
 	bool surveyExsits = false;
@@ -422,7 +422,7 @@ Purpose: Print information of data members formatted
 Parameters: address of property, min nights, and max nights 
 Return: Does not return a value, but prints several pieces of data
 */
-void displayPropertyInfo(Property* propertyPtr, const int minNights, const int maxNights) {
+void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights) {
 	printf("Property name: %s\n", (propertyPtr->propertyName));
 	printf("Property location: %s\n", (propertyPtr->propertyLocation));
 	printf("Property can be rented for %d to %d nights\n", minNights, maxNights);
@@ -437,7 +437,7 @@ Purpose: Allows user to enter a valid integer within range and a sentinel to end
 Parameters: min, max, and sentinel
 Return: Returns a valid integer that is within range or is the sentinel value
 */
-int getValidSentinel(const int min, const int max, const int sentinel) {
+int getValidSentinel(int min, int max, int sentinel) {
 	// Initialize isValid to false
 	bool isValid = false;
 
