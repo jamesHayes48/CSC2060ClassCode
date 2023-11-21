@@ -279,14 +279,9 @@ Parameters: min and max
 Return: a valid integer within range of min and max and not above or below long int
 */
 int getValidInt(int min, int max) {
-
-	// Set isValid to false
+	// Intialize test values for user input and validation
 	bool isValid = false;
-
-	// Declare input string
 	char inputStr[STRING_LENGTH];
-
-	// Set test value to zero
 	int result = 0;
 
 	while (isValid == false) {
@@ -324,6 +319,7 @@ Return: does not return value, but modifies value of address of user input
 converted to integer
 */
 void scanInt(char* input, int* result) {
+	// Check for user input
 	char* endPtr;
 	long intCheck = strtol(input, &endPtr, 10);
 	unsigned int fail = 0;
@@ -344,7 +340,7 @@ Return: Does not return a value, but handles the renter's user story of entering
 */
 void rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentinel,
 	int maxRenters, int maxCategories, int minRating, int maxRating,
-	const char* correctID, const char* correctPasscode, const int unsigned maxAttempts) {
+	const char* correctID, const char* correctPasscode, int unsigned maxAttempts) {
 	bool validSentinel = false;
 	bool surveyExsits = false;
 	int userNights = 0;
@@ -394,7 +390,7 @@ void rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 			puts("");
 		}
 		// If number of nights entered, caculate charge and get rating
-		else if (validNight == true){
+		else if (validNight == true) {
 			
 			// Add to total amount of nights booked of property
 			propertyPtr->totalNights += userNights;
@@ -438,13 +434,9 @@ Parameters: min, max, and sentinel
 Return: Returns a valid integer that is within range or is the sentinel value
 */
 int getValidSentinel(int min, int max, int sentinel) {
-	// Initialize isValid to false
+	// Initialize values for user input and validation
 	bool isValid = false;
-
-	// Declare input string
-	char inputStr[STRING_LENGTH];
-
-	// Intialize test value 
+	char inputStr[STRING_LENGTH]; 
 	int result = 0;
 
 	// Prompt the user for input until it is true
@@ -453,7 +445,6 @@ int getValidSentinel(int min, int max, int sentinel) {
 		fgets(inputStr, STRING_LENGTH, stdin);
 		removeNewLineChar(inputStr);
 
-		// Set error to nothing
 		errno = 0;
 
 		// Scan user input
@@ -594,7 +585,7 @@ void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t tot
 			// Print the rating for the category formatted
 			printf("%30u", survey[user][category]);
 		}
-		// Print new line
+		// Start a new line for next user
 		puts("");
 	}
 }
