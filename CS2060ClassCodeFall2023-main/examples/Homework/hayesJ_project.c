@@ -81,6 +81,15 @@ void insertProperty(Property** headPtr, int minNights, int maxNights, int minRat
 // Prompt for (y)es or (n)o
 char yesOrNo();
 
+// Prompt vacationer for number of nights and rating
+bool rentalMode(Property* propertyPtr, const int minNights, const int maxNights, const int sentinel,
+	const int maxRenters, const int maxCategories, const int minRating, const int maxRating,
+	const char* correctID, const char* correctPasscode, const int unsigned maxAttempts);
+
+// Prompt user which property to rent
+Property* selectProperty(Property** headPtr, char selectName[]);
+
+
 int main (void) {
 	Property* headMainPropertyPtr = NULL;
 	bool ownerLogin = login(CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
@@ -95,6 +104,11 @@ int main (void) {
 			puts("Continue adding properties?");
 			userContinue = yesOrNo();
 		} while (userContinue == 'y');
+
+		do {
+
+			bool rentalMode = true;
+		} while (rentalMode == true);
 	}
 	else {
 		puts("Login unsuccessful");
@@ -151,7 +165,7 @@ bool login(const char* correctID, const char* correctPasscode, const int unsigne
 }
 
 void printProperties(Property* headPtr, int minNights, int maxNights) {
-	// Print pets if there are any pets in list
+	// Print pets if there are any properties in list
 	if (headPtr != NULL) {
 		puts("Properties: ");
 
@@ -165,6 +179,7 @@ void printProperties(Property* headPtr, int minNights, int maxNights) {
 	// If not, then print message
 	else {
 		puts("No properties");
+		puts("");
 	}
 }
 
@@ -385,3 +400,121 @@ char yesOrNo() {
 	// Return character to main
 	return validResponse;
 }
+
+Property* selectProperty(Property** headPtr, char selectName[]) {
+	//Property* previousPtr = NULL;
+	Property* currentPtr = *headPtr;
+
+	char currentName[STRING_LENGTH];
+	char compareSelectName[STRING_LENGTH];
+
+	if (currentPtr != NULL) {
+		strcpy(currentName, currentPtr->propertyName);
+		lowerString(currentName);
+	}
+
+	strcpy(compareSelectName, selectName);
+	lowerString(compareSelectName);
+
+	int comparison = strcmp(currentName, compareSelectName);
+
+	if (currentPtr != NULL) {
+
+		while (currentPtr != NULL && comparison !=0 ) {
+			//previousPtr = currentPtr;
+			currentPtr = currentPtr->nextPropertyPtr;
+
+			strcpy(currentName, currentPtr->propertyName);
+			lowerString(currentName);
+		}
+		if (currentPtr != NULL) {
+			return currentPtr;
+		}
+		else {
+			printf("%s is not in the list of properties!", selectName);
+		}
+	}
+}
+
+/*
+Purpose: Allows vacationer to enter number of nights
+Parameters: address of property, min rental nights, max rental nights, sentinel value, max renters,
+max categories,correct id, correct passcode, and max attempts
+Return: Does not return a value, but handles the renter's user story of entering nights and ratings
+*/
+/*
+bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentinel,
+	int maxRenters, int maxCategories, int minRating, int maxRating,
+	const char* correctID, const char* correctPasscode, int unsigned maxAttempts) {
+	bool validSentinel = false;
+	bool surveyExsits = false;
+	int userNights = 0;
+	double currentCharge = 0;
+	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities", "cat4" };
+
+	// Allow vacationers to enter number of nights and ratings until sentinel value is entered
+	// or number of vacationers exceed max amount of users 
+	do {
+		puts("");
+		displayPropertyInfo(propertyPtr, minNights, maxNights);
+		bool validNight = false;
+
+		// Display survey if previously existing data exists
+		if (surveyExsits == true) {
+			printCategories(surveyCategories, maxCategories);
+			printSurveyResults((propertyPtr->survey), (propertyPtr->currentUser), maxCategories);
+		}
+
+		// Prompt vacationer for number of nights
+		if ((propertyPtr->currentUser) < maxRenters) {
+			printf("%s", "Enter number of nights: ");
+			userNights = getValidSentinel(minNights, maxNights, sentinel);
+
+			// Prompt User for login if sentinel value is entered
+			if (userNights == sentinel) {
+				validSentinel = login(correctID, correctPasscode, maxAttempts);
+			}
+			// Set normal validNight to true if other valid inputs were entered
+			else {
+				validNight = true;
+			}
+		}
+
+		// If sentinel value is entered, complete all of these tasks
+		if (validSentinel == true) {
+
+			// Print total number of renters, nights booked, and total charge
+			printf("Number of renters: %d\n", propertyPtr->currentUser);
+			puts("Number of total nights and total charge: ");
+			printNightsCharges(propertyPtr->totalNights, propertyPtr->totalCharge);
+
+			// Calculate and print category averages
+			calculateCategoryAverages(propertyPtr->averages, propertyPtr->survey, propertyPtr->currentUser, maxCategories);
+			printCategories(surveyCategories, maxCategories);
+			printCategoryData(propertyPtr->averages, propertyPtr->currentUser, maxCategories);
+			puts("");
+		}
+		// If number of nights entered, caculate charge and get rating
+		else if (validNight == true) {
+
+			// Add to total amount of nights booked of property
+			propertyPtr->totalNights += userNights;
+
+			// Calculate and add to total charge of property
+			currentCharge = calculateCharges(userNights, (propertyPtr->interval1), (propertyPtr->interval2), (propertyPtr->rentalRate), (propertyPtr->discount));
+			propertyPtr->totalCharge += currentCharge;
+
+			// Print the vacationer's number of nights and charge
+			printNightsCharges(userNights, currentCharge);
+
+			// Prompt user to enter rating for three categories
+			printSurveyInformation(minRating, maxRating, surveyCategories, maxCategories);
+			getRatings(minRating, maxRating, (propertyPtr->survey), surveyCategories, (propertyPtr->currentUser), maxCategories);
+			surveyExsits = true;
+
+			// Iterate current user to keep track of total users who entered nights and ratings
+			propertyPtr->currentUser++;
+		}
+	} while ((validSentinel == false) && ((propertyPtr->currentUser) < maxRenters));
+}
+*/
