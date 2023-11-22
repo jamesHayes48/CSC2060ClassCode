@@ -1,3 +1,29 @@
+/*
+Name: James Hayes
+Class: CSC 2060
+Project Name: UCCS Air
+OS: Windows 10 and Windows 11
+Description: 
+Rental Owner Login: The program first prompts the owner to login, if the owner logs in successfully 
+within the max number of attemtps, the program can start. If not, the program ends.
+
+Rental Property Owner Set up: After logging in, the owner is prompted to enter the name, location, intervals
+1 and 2, rental rate, and discount for a property. The owner can input more than one at a time. The set up ends
+only when the owner puts yes or no to continue the set up for another property. The properties are stored
+in a linked list alphabetically from a to z.
+
+Vacationer Rental Mode: Once the properties are entered, the vacationer will then be prompt with a selection
+from all of the properties entered to enter the name of the property to rent (not case-sensitive). 
+Once selected, the program will then prompt for the number of nights and then the ratings. It will keep prompting
+until a valid integer is selected for both. If the sentinel value is entered, it will then prompt for a login.
+If the login fails, it will take them back to prompt for the name of the property. The user also cannot
+enter more than the max number of renters, but can use the sentinel value to exit rental mode with a login.
+
+Rental Owner Property Report Mode: Once the sentinel value was entered and the login was successful, 
+the program then prints the final information for the selected property. It will also print to a .txt file 
+with the name of the property selected in folder called fundraiser. The program will then end. 
+*/
+
 #include <stdio.h>
 #include <errno.h>
 #include <limits.h>
@@ -16,7 +42,7 @@
 // Rental property login and sentinal values
 #define CORRECT_ID "id1"
 #define CORRECT_PASSCODE "abcd"
-#define LOGIN_MAX_ATTEMPTS 2
+#define LOGIN_MAX_ATTEMPTS 3
 #define SENTINEL_NEG1 -1
 
 // Rental property constant ranges
@@ -30,7 +56,7 @@
 #define MIN_RATING 1
 #define MAX_RATING 5
 
-// File path
+// Folder and file path
 #define FOLDER_FILE_PATH "C:\\fundraiser\\"
 
 // Property structure and its information
@@ -131,6 +157,9 @@ void createFileName(char fileName[]);
 // Print property information to a file
 void printPropertyToFile(Property* property, char path[], const char* categories[], size_t maxCategories);
 
+// Free memory in list of properties
+void freeRemainingProperties(Property** headPtr);
+
 int main (void) {
 	Property* headMainPropertyPtr = NULL;
 	bool ownerLogin = login(CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
@@ -139,29 +168,37 @@ int main (void) {
 	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
 	Property* selectedProperty = NULL;
 	char filePath[STRING_LENGTH];
-	char folderPath[STRING_LENGTH];
-	strcpy(folderPath, FOLDER_FILE_PATH);
+	char fullPath[STRING_LENGTH];
+	strcpy(fullPath, FOLDER_FILE_PATH);
 
 	// If owner login was successful, allow for program to continue
 	if (ownerLogin == true) {
+		// Keep adding properties until user stops
 		do {
+			// Insert and set up properties in linked list
 			insertProperty(&headMainPropertyPtr, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, MIN_RATE, MAX_RATE, VACATION_RENTERS, RENTER_SURVEY_CATEGORIES);
 
+			// Prompt user to continue 
 			puts("Continue adding properties?");
 			userContinue = yesOrNo();
 		} while (userContinue == 'y');
 
+		// Keep prompting user for names of properties until sentinel value is entered
 		do {
 			char selectedPropertyName[STRING_LENGTH];
 
+			// Print all of the properties and their rental information
 			printProperties(headMainPropertyPtr, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, surveyCategories, RENTER_SURVEY_CATEGORIES);
 
+			// Prompt for property name (not case-sensitive)
 			puts("Select a property:");
 			fgets(selectedPropertyName, STRING_LENGTH, stdin);
 			removeNewLineChar(selectedPropertyName);
 
+			// Return the address of property vacationer wants to stay at
 			selectedProperty = selectProperty(&headMainPropertyPtr, selectedPropertyName);
 
+			// If the property does exist, enter rental mode
 			if (selectedProperty != NULL) {
 				rentalContinue = rentalMode(selectedProperty, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, SENTINEL_NEG1, VACATION_RENTERS, RENTER_SURVEY_CATEGORIES, MIN_RATING, MAX_RATING, surveyCategories, CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
 			}
@@ -170,19 +207,25 @@ int main (void) {
 
 		// Print to file if rental mode is done and sentinel value is entered
 		if (rentalContinue != true) {
-			// Creat name of .txt file
+			// Create name of .txt file
 			strcpy(filePath, selectedProperty->propertyName);
 			createFileName(filePath);
 
-			strcat(folderPath, filePath);
+			// Create full path of where .txt should be located
+			strcat(fullPath, filePath);
 
+			// Print final property info to file
 			puts("Printing to file");
-			printPropertyToFile(selectedProperty, folderPath, surveyCategories, RENTER_SURVEY_CATEGORIES);
+			printPropertyToFile(selectedProperty, fullPath, surveyCategories, RENTER_SURVEY_CATEGORIES);
 		}
 	}
+	// Print error message if login was incorrect
 	else {
 		puts("Login unsuccessful");
 	}
+
+	// Deallocate memory from linked list and end program
+	freeRemainingProperties(&headMainPropertyPtr);
 	puts("Exiting Air UCCS...");
 	return 0;
 }
@@ -260,7 +303,7 @@ void printProperties(Property* headPtr, int minNights, int maxNights, const char
 
 /*
 Purpose: Print information of data members formatted
-Parameters: address of property, min nights, and max nights
+Parameters: address of property, min nights, max nights, category array and number of categories
 Return: Does not return a value, but prints several pieces of data and prints ratings if any were entered
 */
 void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights, const char* categories[], int maxCategories) {
@@ -293,6 +336,11 @@ void removeNewLineChar(char* string) {
 	}
 }
 
+/*
+Purpose: Turn chars in string lowercase, used for non-case sensitive comparisons
+Parameters: array of characters
+Return: Does not return value, but modifies a string to be all lowercase
+*/
 void lowerString(char string[]) {
 	for (size_t stringChar = 0; stringChar < strlen(string); stringChar++) {
 		string[stringChar] = tolower(string[stringChar]);
@@ -421,54 +469,76 @@ void scanInt(char* input, int* result) {
 	*result = (int)intCheck;
 }
 
-
+/*
+Purpose: To dynamically store property structures alphabetically in a linked list while setting up properties
+Parameters: head pointer, minNights, maxNights, minRate, maxRate, max number of vacationers, 
+and number of categories
+Return: Does not return a value, but stores all structures set up by owner in a linked list alphabetically
+*/
 void insertProperty(Property** headPtr, int minNights, int maxNights, int minRate, int maxRate, int maxRenters, int maxCategories) {
 	Property* newPropertyPtr = malloc(sizeof(Property));
 
 	char lowerCurrentName[STRING_LENGTH];
 	char lowerInputName[STRING_LENGTH];
 
+	// Start set up process for property owner
 	setupProperty(newPropertyPtr, minNights, maxNights, minRate, maxRate, maxRenters, maxCategories);
 
+	// Start inserting properties if memory exists
 	if (newPropertyPtr != NULL) {
 		Property* previousPtr = NULL;
 		Property* currentPtr = *headPtr;
 
+		// Copy and make name of current property lowercase
 		if (currentPtr != NULL) {
 			strcpy(lowerCurrentName, currentPtr->propertyName);
 			lowerString(lowerCurrentName);
 		}
 
+		// Copy and make name lowercase of owner's input
 		strcpy(lowerInputName, newPropertyPtr->propertyName);
 		lowerString(lowerInputName);
 
+		// Compare the two names
 		int comparison = strcmp(lowerCurrentName, lowerInputName);
 
+		// Insert properties alphabetically while the name is earlier in alphabet
 		while (currentPtr != NULL && comparison <= 0) {
 			previousPtr = currentPtr;
 			currentPtr = currentPtr->nextPropertyPtr;
 
+			// Make new current property name lowercase
 			if (currentPtr != NULL) {
 				strcpy(lowerCurrentName, currentPtr->propertyName);
 				lowerString(lowerCurrentName);
 			}
+			// Compare again
 			comparison = strcmp(lowerCurrentName, lowerInputName);
 		}
+		// If name apears earlier in alphabet than other names, make it the first property
 		if (previousPtr == NULL) {
 			*headPtr = newPropertyPtr;
 		}
+		// If not, connect the previous property to the new one
 		else {
 			previousPtr->nextPropertyPtr = newPropertyPtr;
 		}
+		// Connect new property to the next one in list
 		newPropertyPtr->nextPropertyPtr = currentPtr;
 		
 	}
+	// Print error message if there is no address to allocate for
 	else {
 		puts("No memory to place more properties!");
 	}
 
 }
 
+/*
+Purpose: To prompt owner for y or n to continue adding properties
+Parameters: None
+Return: returns a char indicating whether or not to continue
+*/
 char yesOrNo() {
 	char validResponse = '\0';
 
@@ -484,50 +554,62 @@ char yesOrNo() {
 	return validResponse;
 }
 
+/*
+Purpose: to prompt vacationer to select a property to rent
+Parameters: head pointer and name of selected property
+Return: The address of the property the vacationer selected
+*/
 Property* selectProperty(Property** headPtr, char selectName[]) {
-	Property* previousPtr = NULL;
 	Property* currentPtr = *headPtr;
 	Property* selectedProperty = NULL;
 
 	char currentName[STRING_LENGTH];
 	char compareSelectName[STRING_LENGTH];
 
+	// If current pointer exsits, make a copy of name and make it lowercase
 	if (currentPtr != NULL) {
 		strcpy(currentName, currentPtr->propertyName);
 		lowerString(currentName);
 	}
 
+	// Make copy of name and make it lowercase
 	strcpy(compareSelectName, selectName);
 	lowerString(compareSelectName);
 
+	// Compare the two
 	int comparison = strcmp(currentName, compareSelectName);
 
+	// Start searching if the list exists
 	if (currentPtr != NULL) {
 
+		// Search through linked list while names are not the same
 		while (currentPtr != NULL && comparison !=0 ) {
-			previousPtr = currentPtr;
 			currentPtr = currentPtr->nextPropertyPtr;
 
+			// Make a copy of the current property and make it lowercase and compare again
 			if (currentPtr != NULL) {
 				strcpy(currentName, currentPtr->propertyName);
 				lowerString(currentName);
 				comparison = strcmp(currentName, compareSelectName);
 			}
 		}
+		// If the property was found, make the selected property the address of the seleted property
 		if (currentPtr != NULL) {
 			selectedProperty = currentPtr;
 		}
+		// If not, print error message
 		else {
 			printf("%s is not in the list of properties!\n", selectName);
 		}
+		// Return address of selected property
 		return selectedProperty;
 	}
 }
 
 /*
 Purpose: Allows vacationer to enter number of nights
-Parameters: address of property, min rental nights, max rental nights, sentinel value, max renters,
-max categories,correct id, correct passcode, and max attempts
+Parameters: address of property, min rental nights, max rental nights, sentinel value, max renters, 
+array of categories, max categories,correct id, correct passcode, and max attempts
 Return: Does not return a value, but handles the renter's user story of entering nights and ratings
 */
 bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentinel,
@@ -557,13 +639,13 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 			validNight = true;
 		}
 	}
-	else if (propertyPtr->currentUser == maxRenters) {
-		validSentinel = login(correctID, correctPasscode, maxAttempts);
-	}
-		// If sentinel value is entered, complete all of these tasks
+	
+	// If sentinel value is entered, complete all of these tasks
 	if (validSentinel == true) {
 
+		// Rental Mode ends
 		rentalContinue = false;
+		
 		// Print total number of renters, nights booked, and total charge
 		puts("");
 		puts("Rental Property Report");
@@ -601,10 +683,11 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 		// Iterate current user to keep track of total users who entered nights and ratings
 		propertyPtr->currentUser++;
 		}
-	// Print message stating it has
+	// Print message stating it has the max number of renters
 	else if(propertyPtr->currentUser == maxRenters) {
 		printf("%s has max vacancy!\n", propertyPtr->propertyName);
 	}
+	// Return whether or not to continue rental mode
 	return rentalContinue;
 }
 
@@ -729,7 +812,8 @@ void printCategories(const char* categories[], size_t totalCategories)
 
 /*
 Purpose: Allows user to enter a rating for stay at property
-Parameters: Min rating, max rating, array of surveys, number of users, and number of categories
+Parameters: Min rating, max rating, array of surveys, array of categories, 
+current number of users, and number of categories
 Return: Does not return a value, but prompts user to enter a rating for a category then
 stores rating in an array of surveys
 */
@@ -804,23 +888,34 @@ void printCategoryData(const double averages[], size_t totalUsers, size_t totalC
 }
 
 /*
-
+Purpose: To create the name of file to print to and fill in whitespace with _
+Parameters: name of file
+Return: Does not return a value, but creates the name of file with property name
 */
 void createFileName(char fileName[]) {
+	// Fill in whitespace with _
 	for (size_t nameChar = 0; nameChar < strlen(fileName); nameChar++ ) {
 		if (fileName[nameChar] == ' ') {
 			fileName[nameChar] = '_';
 		}
 	}
+	// Concatentate .txt to end of name
 	strcat(fileName, ".txt");
 }
 
+/*
+Purpose: To print the final property information to a file
+Parameters: Property selected, path, the array of categories, and number of categories
+Return: Does not return a value, but prints the final information of properties into a file
+*/
 void printPropertyToFile(Property* property, char path[], const char* categories[], size_t maxCategories) {
 	FILE* fPtr = NULL;
 	
+	// Print error message if file or folder could not be found
 	if ((fPtr = fopen(path,"w")) == NULL) {
-		puts("File cannot be found");
+		puts("File or folder cannot be found");
 	}
+	// Print to file if both exist
 	else{
 		fputs("Rental Property Report\n", fPtr);
 		fprintf(fPtr, "Name: %s\n", property->propertyName);
@@ -837,6 +932,33 @@ void printPropertyToFile(Property* property, char path[], const char* categories
 		for (size_t category = 0; category < maxCategories; category++) {
 			fprintf(fPtr, "%s: %.1f\n", categories[category], property->averages[category]);
 		}
+		// Close access to file
 		fclose(fPtr);
+	}
+}
+
+/*
+Purpose: To deallocate memory from linked list once the program ends
+Parameters: Address of the headPtr on main
+Return: does not return value, but deallocates memory on linked list
+*/
+void freeRemainingProperties(Property** headPtr) {
+	
+	// Deallocate memoty from property pointer list if it exists
+	if (*headPtr != NULL) {
+		Property* currentPtr = *headPtr;
+		Property* nextFreePtr = NULL;
+
+		// While currentPtr is not null, deallocate every node in list
+		while (currentPtr != NULL) {
+			nextFreePtr = currentPtr->nextPropertyPtr;
+			free(currentPtr);
+			currentPtr = nextFreePtr;
+		}
+		*headPtr = NULL;
+	}
+	// If not, print error message
+	else {
+		puts("No properties to deallocate memory");
 	}
 }
