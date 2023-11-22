@@ -96,7 +96,7 @@ Property* selectProperty(Property** headPtr, char selectName[]);
 void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights, const char* categories[], int maxCategories);
 
 // Get valid integer, within min and max and accept sentinel value
-int getValidSentinel(const int min, const int max, const int sentinel);
+int getValidSentinel(int min, int max, int sentinel);
 
 // Calcualte the charges for number of nights
 double calculateCharges(unsigned int nights, unsigned int interval1, unsigned int interval2, double rate, double discount);
@@ -125,6 +125,12 @@ void calculateCategoryAverages(double averages[], const int survey[][RENTER_SURV
 // Print the averages for each category
 void printCategoryData(const double averages[], size_t totalUsers, size_t totalCategories);
 
+// Create file name
+void createFileName(char fileName[]);
+
+// Print property information to a file
+void printPropertyToFile(Property* property, char path[], const char* categories[], size_t maxCategories);
+
 int main (void) {
 	Property* headMainPropertyPtr = NULL;
 	bool ownerLogin = login(CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
@@ -132,6 +138,9 @@ int main (void) {
 	bool rentalContinue = true;
 	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
 	Property* selectedProperty = NULL;
+	char filePath[STRING_LENGTH];
+	char folderPath[STRING_LENGTH];
+	strcpy(folderPath, FOLDER_FILE_PATH);
 
 	// If owner login was successful, allow for program to continue
 	if (ownerLogin == true) {
@@ -158,6 +167,18 @@ int main (void) {
 			}
 			
 		} while (rentalContinue == true);
+
+		// Print to file if rental mode is done and sentinel value is entered
+		if (rentalContinue != true) {
+			// Creat name of .txt file
+			strcpy(filePath, selectedProperty->propertyName);
+			createFileName(filePath);
+
+			strcat(folderPath, filePath);
+
+			puts("Printing to file");
+			printPropertyToFile(selectedProperty, folderPath, surveyCategories, RENTER_SURVEY_CATEGORIES);
+		}
 	}
 	else {
 		puts("Login unsuccessful");
@@ -213,6 +234,11 @@ bool login(const char* correctID, const char* correctPasscode, const int unsigne
 	return loginStatus;
 }
 
+/*
+Purpose: Print every property in the linked list
+Parameters: head pointer, minNights, maxNights, categories string, and max categories
+Return: Does not return a value, but prints every property in list with information
+*/
 void printProperties(Property* headPtr, int minNights, int maxNights, const char* categories[], int maxCategories) {
 	// Print pets if there are any properties in list
 	if (headPtr != NULL) {
@@ -235,7 +261,7 @@ void printProperties(Property* headPtr, int minNights, int maxNights, const char
 /*
 Purpose: Print information of data members formatted
 Parameters: address of property, min nights, and max nights
-Return: Does not return a value, but prints several pieces of data
+Return: Does not return a value, but prints several pieces of data and prints ratings if any were entered
 */
 void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights, const char* categories[], int maxCategories) {
 	printf("Property name: %s\n", (propertyPtr->propertyName));
@@ -492,7 +518,7 @@ Property* selectProperty(Property** headPtr, char selectName[]) {
 			selectedProperty = currentPtr;
 		}
 		else {
-			printf("%s is not in the list of properties!", selectName);
+			printf("%s is not in the list of properties!\n", selectName);
 		}
 		return selectedProperty;
 	}
@@ -509,18 +535,16 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 	const char* correctID, const char* correctPasscode, int unsigned maxAttempts) {
 	bool validSentinel = false;
 	bool validNight = false;
-	//bool rentalContinue = false;
+	bool rentalContinue = true;
 	int userNights = 0;
 	double currentCharge = 0;
-	//const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities"};
 
-	// Allow vacationers to enter number of nights and ratings until sentinel value is entered
-	// or number of vacationers exceed max amount of users 
+	// Display Information 
 	puts("");
 	displayPropertyInfo(propertyPtr, minNights, maxNights, categories, maxCategories);
 
 	// Prompt vacationer for number of nights
-	if ((propertyPtr->currentUser) < maxRenters) {
+	if ((propertyPtr->currentUser) <= maxRenters) {
 		printf("%s", "Enter number of nights: ");
 		userNights = getValidSentinel(minNights, maxNights, sentinel);
 
@@ -528,19 +552,28 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 		if (userNights == sentinel) {
 			validSentinel = login(correctID, correctPasscode, maxAttempts);
 		}
-			// Set normal validNight to true if other valid inputs were entered
+		// Set normal validNight to true if other valid inputs were entered
 		else {
 			validNight = true;
 		}
 	}
-
+	else if (propertyPtr->currentUser == maxRenters) {
+		validSentinel = login(correctID, correctPasscode, maxAttempts);
+	}
 		// If sentinel value is entered, complete all of these tasks
 	if (validSentinel == true) {
 
+		rentalContinue = false;
 		// Print total number of renters, nights booked, and total charge
-		printf("Number of renters: %d\n", propertyPtr->currentUser);
-		puts("Number of total nights and total charge: ");
-		printNightsCharges(propertyPtr->totalNights, propertyPtr->totalCharge);
+		puts("");
+		puts("Rental Property Report");
+		puts("");
+		printf("Property Name: %s\n", propertyPtr->propertyName);
+		printf("Property Location: %s\n", propertyPtr->propertyLocation);
+		puts("");
+		printf("Total number of renters: %d\n", propertyPtr->currentUser);
+		printf("Total number of nights: %d\n", propertyPtr->totalNights);
+		printf("Total number of charges: $%.2f\n", propertyPtr->totalCharge);
 
 		// Calculate and print category averages
 		calculateCategoryAverages(propertyPtr->averages, propertyPtr->survey, propertyPtr->currentUser, maxCategories);
@@ -548,8 +581,8 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 		printCategoryData(propertyPtr->averages, propertyPtr->currentUser, maxCategories);
 		puts("");
 	}
-		// If number of nights entered, caculate charge and get rating
-	else if (validNight == true) {
+	// If valid night was entered and it the property has room, caculate charge and get rating
+	else if (validNight == true && propertyPtr->currentUser < maxRenters) {
 
 		// Add to total amount of nights booked of property
 		propertyPtr->totalNights += userNights;
@@ -568,7 +601,11 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 		// Iterate current user to keep track of total users who entered nights and ratings
 		propertyPtr->currentUser++;
 		}
-	return validNight;
+	// Print message stating it has
+	else if(propertyPtr->currentUser == maxRenters) {
+		printf("%s has max vacancy!\n", propertyPtr->propertyName);
+	}
+	return rentalContinue;
 }
 
 /*
@@ -763,5 +800,43 @@ void printCategoryData(const double averages[], size_t totalUsers, size_t totalC
 	for (size_t category = 0; category < totalCategories; ++category) {
 		// Print the average for the category
 		printf("%27.1f", averages[category]);
+	}
+}
+
+/*
+
+*/
+void createFileName(char fileName[]) {
+	for (size_t nameChar = 0; nameChar < strlen(fileName); nameChar++ ) {
+		if (fileName[nameChar] == ' ') {
+			fileName[nameChar] = '_';
+		}
+	}
+	strcat(fileName, ".txt");
+}
+
+void printPropertyToFile(Property* property, char path[], const char* categories[], size_t maxCategories) {
+	FILE* fPtr = NULL;
+	
+	if ((fPtr = fopen(path,"w")) == NULL) {
+		puts("File cannot be found");
+	}
+	else{
+		fputs("Rental Property Report\n", fPtr);
+		fprintf(fPtr, "Name: %s\n", property->propertyName);
+		fprintf(fPtr, "Location: %s\n", property->propertyLocation);
+
+		fputs(" \n", fPtr);
+		fputs("Rental Property Totals\n", fPtr);
+		fprintf(fPtr, "Total Renters: %d\n", property->currentUser);
+		fprintf(fPtr, "Total Nights: %d\n", property->totalNights);
+		fprintf(fPtr, "Total Charge: $%.2f\n", property->totalCharge);
+
+		fputs(" \n", fPtr);
+		fputs("Category Rating Averges\n", fPtr);
+		for (size_t category = 0; category < maxCategories; category++) {
+			fprintf(fPtr, "%s: %.1f\n", categories[category], property->averages[category]);
+		}
+		fclose(fPtr);
 	}
 }
