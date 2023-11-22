@@ -355,7 +355,7 @@ void rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 		bool validNight = false;
 
 		// Display survey if previously existing data exists
-		if (surveyExsits == true) {
+		if (propertyPtr->survey[0][0] != 0) {
 			printCategories(surveyCategories, maxCategories);
 			printSurveyResults((propertyPtr->survey), (propertyPtr->currentUser), maxCategories);
 		}

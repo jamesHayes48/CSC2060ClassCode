@@ -11,7 +11,7 @@
 
 // Two dimensional array storage amounts for rows and columns of survey data
 #define VACATION_RENTERS 5
-#define RENTER_SURVEY_CATEGORIES 4
+#define RENTER_SURVEY_CATEGORIES 3
 
 // Rental property login and sentinal values
 #define CORRECT_ID "id1"
@@ -29,6 +29,9 @@
 // Survey Min and Max
 #define MIN_RATING 1
 #define MAX_RATING 5
+
+// File path
+#define FOLDER_FILE_PATH "C:\\fundraiser\\"
 
 // Property structure and its information
 typedef struct property {
@@ -52,10 +55,10 @@ typedef struct property {
 bool login(const char* correctID, const char* correctPasscode, const int unsigned maxAttempts);
 
 // Display Property information for vacationer
-void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights);
+void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights, const char* categories[], int maxCategories);
 
 // Print Properties
-void printProperties(Property* headPtr, int minNights, int maxNights);
+void printProperties(Property* headPtr, int minNights, int maxNights, const char* categories[], int maxCategories);
 
 // Print min and maxes of owner set up
 void maxOwnerSetUp(const int minInterval, const int maxInterval, const double minRate, const double maxRate);
@@ -82,15 +85,15 @@ void insertProperty(Property** headPtr, int minNights, int maxNights, int minRat
 char yesOrNo();
 
 // Prompt vacationer for number of nights and rating
-bool rentalMode(Property* propertyPtr, const int minNights, const int maxNights, const int sentinel,
-	const int maxRenters, const int maxCategories, const int minRating, const int maxRating,
-	const char* correctID, const char* correctPasscode, const int unsigned maxAttempts);
+bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentinel,
+	int maxRenters, int maxCategories, int minRating, int maxRating, const char* categories[],
+	const char* correctID, const char* correctPasscode, int unsigned maxAttempts);
 
 // Prompt user which property to rent
 Property* selectProperty(Property** headPtr, char selectName[]);
 
 // Display property information for vacationer
-void displayPropertyInfo(Property* propertyPtr, const int minNights, const int maxNights);
+void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights, const char* categories[], int maxCategories);
 
 // Get valid integer, within min and max and accept sentinel value
 int getValidSentinel(const int min, const int max, const int sentinel);
@@ -127,7 +130,10 @@ int main (void) {
 	bool ownerLogin = login(CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
 	char userContinue;
 	bool rentalContinue = true;
+	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
+	Property* selectedProperty = NULL;
 
+	// If owner login was successful, allow for program to continue
 	if (ownerLogin == true) {
 		do {
 			insertProperty(&headMainPropertyPtr, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, MIN_RATE, MAX_RATE, VACATION_RENTERS, RENTER_SURVEY_CATEGORIES);
@@ -139,15 +145,18 @@ int main (void) {
 		do {
 			char selectedPropertyName[STRING_LENGTH];
 
-			printProperties(headMainPropertyPtr, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS);
+			printProperties(headMainPropertyPtr, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, surveyCategories, RENTER_SURVEY_CATEGORIES);
 
 			puts("Select a property:");
 			fgets(selectedPropertyName, STRING_LENGTH, stdin);
 			removeNewLineChar(selectedPropertyName);
 
-			Property* selectedProperty = selectProperty(&headMainPropertyPtr, selectedPropertyName);
+			selectedProperty = selectProperty(&headMainPropertyPtr, selectedPropertyName);
 
-			rentalContinue = rentalMode(selectedProperty, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, SENTINEL_NEG1, VACATION_RENTERS, RENTER_SURVEY_CATEGORIES, MIN_RATING, MAX_RATING, CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
+			if (selectedProperty != NULL) {
+				rentalContinue = rentalMode(selectedProperty, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, SENTINEL_NEG1, VACATION_RENTERS, RENTER_SURVEY_CATEGORIES, MIN_RATING, MAX_RATING, surveyCategories, CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
+			}
+			
 		} while (rentalContinue == true);
 	}
 	else {
@@ -204,14 +213,14 @@ bool login(const char* correctID, const char* correctPasscode, const int unsigne
 	return loginStatus;
 }
 
-void printProperties(Property* headPtr, int minNights, int maxNights) {
+void printProperties(Property* headPtr, int minNights, int maxNights, const char* categories[], int maxCategories) {
 	// Print pets if there are any properties in list
 	if (headPtr != NULL) {
 		puts("Properties: ");
 
 		Property* currentPtr = headPtr;
 		while (currentPtr != NULL) {
-			displayPropertyInfo(currentPtr, minNights, maxNights);
+			displayPropertyInfo(currentPtr, minNights, maxNights, categories, maxCategories);
 			currentPtr = currentPtr->nextPropertyPtr;
 			puts("");
 		}
@@ -228,7 +237,7 @@ Purpose: Print information of data members formatted
 Parameters: address of property, min nights, and max nights
 Return: Does not return a value, but prints several pieces of data
 */
-void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights) {
+void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights, const char* categories[], int maxCategories) {
 	printf("Property name: %s\n", (propertyPtr->propertyName));
 	printf("Property location: %s\n", (propertyPtr->propertyLocation));
 	printf("Property can be rented for %d to %d nights\n", minNights, maxNights);
@@ -236,6 +245,14 @@ void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights) {
 	printf("Discount rate of $%d.00 for nights %d to %d\n", (propertyPtr->discount), (propertyPtr->interval1), (propertyPtr->interval2));
 	printf("Discount rate of $%d.00 for nights over %d\n", (propertyPtr->discount) * DISCOUNT_MULTIPLIER, (propertyPtr->interval2));
 
+	// Print ratings if any were entered
+	if (propertyPtr->survey[0][0] != 0) {
+		printCategories(categories, maxCategories);
+		printSurveyResults(propertyPtr->survey, propertyPtr->currentUser, RENTER_SURVEY_CATEGORIES);
+	}
+	else {
+		puts("No Ratings Currently");
+	}
 }
 
 /*
@@ -465,8 +482,11 @@ Property* selectProperty(Property** headPtr, char selectName[]) {
 			previousPtr = currentPtr;
 			currentPtr = currentPtr->nextPropertyPtr;
 
-			strcpy(currentName, currentPtr->propertyName);
-			lowerString(currentName);
+			if (currentPtr != NULL) {
+				strcpy(currentName, currentPtr->propertyName);
+				lowerString(currentName);
+				comparison = strcmp(currentName, compareSelectName);
+			}
 		}
 		if (currentPtr != NULL) {
 			selectedProperty = currentPtr;
@@ -485,25 +505,19 @@ max categories,correct id, correct passcode, and max attempts
 Return: Does not return a value, but handles the renter's user story of entering nights and ratings
 */
 bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentinel,
-	int maxRenters, int maxCategories, int minRating, int maxRating,
+	int maxRenters, int maxCategories, int minRating, int maxRating, const char* categories[],
 	const char* correctID, const char* correctPasscode, int unsigned maxAttempts) {
 	bool validSentinel = false;
-	bool surveyExsits = false;
+	bool validNight = false;
+	//bool rentalContinue = false;
 	int userNights = 0;
 	double currentCharge = 0;
-	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities", "cat4" };
+	//const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities"};
 
 	// Allow vacationers to enter number of nights and ratings until sentinel value is entered
 	// or number of vacationers exceed max amount of users 
 	puts("");
-	displayPropertyInfo(propertyPtr, minNights, maxNights);
-	bool validNight = false;
-
-		// Display survey if previously existing data exists
-	if (surveyExsits == true) {
-		printCategories(surveyCategories, maxCategories);
-		printSurveyResults((propertyPtr->survey), (propertyPtr->currentUser), maxCategories);
-	}
+	displayPropertyInfo(propertyPtr, minNights, maxNights, categories, maxCategories);
 
 	// Prompt vacationer for number of nights
 	if ((propertyPtr->currentUser) < maxRenters) {
@@ -530,7 +544,7 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 
 		// Calculate and print category averages
 		calculateCategoryAverages(propertyPtr->averages, propertyPtr->survey, propertyPtr->currentUser, maxCategories);
-		printCategories(surveyCategories, maxCategories);
+		printCategories(categories, maxCategories);
 		printCategoryData(propertyPtr->averages, propertyPtr->currentUser, maxCategories);
 		puts("");
 	}
@@ -548,13 +562,13 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 		printNightsCharges(userNights, currentCharge);
 
 		// Prompt user to enter rating for three categories
-		printSurveyInformation(minRating, maxRating, surveyCategories, maxCategories);
-		getRatings(minRating, maxRating, (propertyPtr->survey), surveyCategories, (propertyPtr->currentUser), maxCategories);
-		surveyExsits = true;
+		printSurveyInformation(minRating, maxRating, categories, maxCategories);
+		getRatings(minRating, maxRating, (propertyPtr->survey), categories, (propertyPtr->currentUser), maxCategories);
 
 		// Iterate current user to keep track of total users who entered nights and ratings
 		propertyPtr->currentUser++;
 		}
+	return validNight;
 }
 
 /*
