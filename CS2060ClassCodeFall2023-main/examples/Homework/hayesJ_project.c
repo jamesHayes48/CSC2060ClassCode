@@ -155,7 +155,7 @@ void printCategoryData(const double averages[], size_t totalUsers, size_t totalC
 void createFileName(char fileName[]);
 
 // Print property information to a file
-void printPropertyToFile(Property* property, char path[], const char* categories[], size_t maxCategories);
+void printPropertyToFile(Property* propertyPtr, char path[], const char* categories[], size_t maxCategories);
 
 // Free memory in list of properties
 void freeRemainingProperties(Property** headPtr);
@@ -285,6 +285,7 @@ Return: Does not return a value, but prints every property in list with informat
 void printProperties(Property* headPtr, int minNights, int maxNights, const char* categories[], int maxCategories) {
 	// Print pets if there are any properties in list
 	if (headPtr != NULL) {
+		puts("");
 		puts("Properties: ");
 
 		Property* currentPtr = headPtr;
@@ -599,7 +600,7 @@ Property* selectProperty(Property** headPtr, char selectName[]) {
 		}
 		// If not, print error message
 		else {
-			printf("%s is not in the list of properties!\n", selectName);
+			printf("%s does not match any properties listed, please enter the name again.\n", selectName);
 		}
 		// Return address of selected property
 		return selectedProperty;
@@ -908,7 +909,7 @@ Purpose: To print the final property information to a file
 Parameters: Property selected, path, the array of categories, and number of categories
 Return: Does not return a value, but prints the final information of properties into a file
 */
-void printPropertyToFile(Property* property, char path[], const char* categories[], size_t maxCategories) {
+void printPropertyToFile(Property* propertyPtr, char path[], const char* categories[], size_t maxCategories) {
 	FILE* fPtr = NULL;
 	
 	// Print error message if file or folder could not be found
@@ -918,19 +919,19 @@ void printPropertyToFile(Property* property, char path[], const char* categories
 	// Print to file if both exist
 	else{
 		fputs("Rental Property Report\n", fPtr);
-		fprintf(fPtr, "Name: %s\n", property->propertyName);
-		fprintf(fPtr, "Location: %s\n", property->propertyLocation);
+		fprintf(fPtr, "Name: %s\n", propertyPtr->propertyName);
+		fprintf(fPtr, "Location: %s\n", propertyPtr->propertyLocation);
 
 		fputs(" \n", fPtr);
 		fputs("Rental Property Totals\n", fPtr);
-		fprintf(fPtr, "Total Renters: %d\n", property->currentUser);
-		fprintf(fPtr, "Total Nights: %d\n", property->totalNights);
-		fprintf(fPtr, "Total Charge: $%.2f\n", property->totalCharge);
+		fprintf(fPtr, "Total Renters: %d\n", propertyPtr->currentUser);
+		fprintf(fPtr, "Total Nights: %d\n", propertyPtr->totalNights);
+		fprintf(fPtr, "Total Charge: $%.2f\n", propertyPtr->totalCharge);
 
 		fputs(" \n", fPtr);
 		fputs("Category Rating Averges\n", fPtr);
 		for (size_t category = 0; category < maxCategories; category++) {
-			fprintf(fPtr, "%s: %.1f\n", categories[category], property->averages[category]);
+			fprintf(fPtr, "%s: %.1f\n", categories[category], propertyPtr->averages[category]);
 		}
 		// Close access to file
 		fclose(fPtr);
