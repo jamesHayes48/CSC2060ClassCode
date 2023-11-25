@@ -24,6 +24,7 @@ the program then prints the final information for the selected property. It will
 with the name of the property selected in folder called fundraiser. The program will then end. 
 */
 
+// Header files
 #include <stdio.h>
 #include <errno.h>
 #include <limits.h>
@@ -77,6 +78,7 @@ typedef struct property {
 	struct property* nextPropertyPtr;
 } Property;
 
+// Functions
 // Prompt user login
 bool login(const char* correctID, const char* correctPasscode, const int unsigned maxAttempts);
 
@@ -162,8 +164,11 @@ void freeRemainingProperties(Property** headPtr);
 
 int main (void) {
 	Property* headMainPropertyPtr = NULL;
+
+	// Prompt for user login
 	bool ownerLogin = login(CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
-	char userContinue;
+
+	char userContinue = ' ';
 	bool rentalContinue = true;
 	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
 	Property* selectedProperty = NULL;
@@ -740,10 +745,8 @@ Parameters: number of nights, 1st interval, 2nd interval, rental rate, and disco
 Return: Returns a double value in dollars based on number of nights and intervals
 */
 double calculateCharges(unsigned int nights, unsigned int interval1, unsigned int interval2, double rate, double discount) {
-	// Intialize count
+	// Initialize both count and charges
 	unsigned int count = 1;
-
-	// Intialize charges
 	double charges = 0;
 
 	// Loop until count is greater than number of nights
