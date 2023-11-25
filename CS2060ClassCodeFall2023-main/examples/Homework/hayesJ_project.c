@@ -602,9 +602,9 @@ Property* selectProperty(Property** headPtr, char selectName[]) {
 		else {
 			printf("%s does not match any properties listed, please enter the name again.\n", selectName);
 		}
-		// Return address of selected property
-		return selectedProperty;
 	}
+	// Return address of selected propertyz
+	return selectedProperty;
 }
 
 /*
