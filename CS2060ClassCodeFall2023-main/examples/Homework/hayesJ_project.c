@@ -312,7 +312,7 @@ void displayPropertyInfo(Property* propertyPtr, int minNights, int maxNights, co
 	printf("Property location: %s\n", (propertyPtr->propertyLocation));
 	printf("Property can be rented for %d to %d nights\n", minNights, maxNights);
 	printf("The price for the first %d nights is $%d.00\n", (propertyPtr->interval1), (propertyPtr->rentalRate));
-	printf("Discount rate of $%d.00 for nights %d to %d\n", (propertyPtr->discount), (propertyPtr->interval1), (propertyPtr->interval2));
+	printf("Discount rate of $%d.00 for nights %d to %d\n", (propertyPtr->discount), (propertyPtr->interval1 + 1), (propertyPtr->interval2));
 	printf("Discount rate of $%d.00 for nights over %d\n", (propertyPtr->discount) * DISCOUNT_MULTIPLIER, (propertyPtr->interval2));
 
 	// Print ratings if any were entered
@@ -399,8 +399,8 @@ void setupProperty(Property* propertyPtr, const int minNights, const int maxNigh
 	propertyPtr->interval1 = getValidInt(minNights, maxNights);
 
 	// Ask for second interval
-	printf("Enter second interval between %d and %d: ", (propertyPtr->interval1), maxNights);
-	propertyPtr->interval2 = getValidInt((propertyPtr->interval1), maxNights);
+	printf("Enter second interval between %d and %d: ", (propertyPtr->interval1 + 1), maxNights);
+	propertyPtr->interval2 = getValidInt((propertyPtr->interval1 + 1), maxNights);
 
 	//Ask for rental rate
 	printf("Enter rental rate between %d and %d: ", minRate, maxRate);
