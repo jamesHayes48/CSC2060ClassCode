@@ -348,6 +348,7 @@ Parameters: array of characters
 Return: Does not return value, but modifies a string to be all lowercase
 */
 void lowerString(char string[]) {
+	// Iterate through each character in string and make it lowercase
 	for (size_t stringChar = 0; stringChar < strlen(string); stringChar++) {
 		string[stringChar] = tolower(string[stringChar]);
 	}
@@ -566,6 +567,7 @@ Parameters: head pointer and name of selected property
 Return: The address of the property the vacationer selected
 */
 Property* selectProperty(Property** headPtr, char selectName[]) {
+	// Initalize pointers for property linked list
 	Property* currentPtr = *headPtr;
 	Property* selectedProperty = NULL;
 
@@ -621,9 +623,12 @@ Return: Does not return a value, but handles the renter's user story of entering
 bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentinel,
 	int maxRenters, int maxCategories, int minRating, int maxRating, const char* categories[],
 	const char* correctID, const char* correctPasscode, int unsigned maxAttempts) {
+	// Initalize boolean value for program flow
 	bool validSentinel = false;
 	bool validNight = false;
 	bool rentalContinue = true;
+
+	// Initalize nights and charge
 	int userNights = 0;
 	double currentCharge = 0;
 
@@ -646,7 +651,7 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 		}
 	}
 	
-	// If sentinel value is entered, complete all of these tasks
+	// If a valid sentinel login is entered, complete all of these tasks
 	if (validSentinel == true) {
 
 		// Rental Mode ends
@@ -691,7 +696,7 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 		}
 	// Print message stating it has the max number of renters
 	else if(propertyPtr->currentUser == maxRenters) {
-		printf("%s has max vacancy!\n", propertyPtr->propertyName);
+		printf("%s can no longer be rented!\n", propertyPtr->propertyName);
 	}
 	// Return whether or not to continue rental mode
 	return rentalContinue;
