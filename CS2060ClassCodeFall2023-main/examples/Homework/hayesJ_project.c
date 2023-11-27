@@ -207,21 +207,32 @@ int main (void) {
 			if (selectedProperty != NULL) {
 				rentalContinue = rentalMode(selectedProperty, MIN_RENTAL_NIGHTS, MAX_RENTAL_NIGHTS, SENTINEL_NEG1, VACATION_RENTERS, RENTER_SURVEY_CATEGORIES, MIN_RATING, MAX_RATING, surveyCategories, CORRECT_ID, CORRECT_PASSCODE, LOGIN_MAX_ATTEMPTS);
 			}
-			
+
 		} while (rentalContinue == true);
 
 		// Print to file if rental mode is done and sentinel value is entered
 		if (rentalContinue != true) {
-			// Create name of .txt file
-			strcpy(filePath, selectedProperty->propertyName);
-			createFileName(filePath);
+			if (headMainPropertyPtr != NULL) {
+				Property* propertyToPrint = headMainPropertyPtr;
 
-			// Create full path of where .txt should be located
-			strcat(fullPath, filePath);
+				while (propertyToPrint != NULL) {
+					// Create name of .txt file
+					strcpy(filePath, propertyToPrint->propertyName);
+					createFileName(filePath);
 
-			// Print final property info to file
-			puts("Printing to file");
-			printPropertyToFile(selectedProperty, fullPath, surveyCategories, RENTER_SURVEY_CATEGORIES);
+					// Create full path of where .txt should be located
+					strcat(fullPath, filePath);
+
+					// Print final property info to file
+					puts("Printing to file");
+					printPropertyToFile(propertyToPrint, fullPath, surveyCategories, RENTER_SURVEY_CATEGORIES);
+
+					propertyToPrint = propertyToPrint->nextPropertyPtr;
+
+					strcpy(fullPath, FOLDER_FILE_PATH);
+				}
+
+			}
 		}
 	}
 	// Print error message if login was incorrect
