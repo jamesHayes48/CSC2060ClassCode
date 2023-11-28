@@ -20,7 +20,7 @@ If the login fails, it will take them back to prompt for the name of the propert
 enter more than the max number of renters, but can use the sentinel value to exit rental mode with a login.
 
 Rental Owner Property Report Mode: Once the sentinel value was entered and the login was successful, 
-the program then prints the final information for the selected property. It will also print to a .txt file 
+the program then prints the final information for every property. It will also print to a .txt file 
 with the name of the property selected in folder called fundraiser. The program will then end. 
 */
 
@@ -150,6 +150,9 @@ void printSurveyResults(const int survey[][RENTER_SURVEY_CATEGORIES], size_t tot
 // Calculate the average for each category
 void calculateCategoryAverages(double averages[], const int survey[][RENTER_SURVEY_CATEGORIES], size_t totalUsers, size_t totalCategories);
 
+// Calculate and print the information for properties
+void printFinalPropertyInfo(Property* propertyPtr, const char* categories[], int maxCategories);
+
 // Print the averages for each category
 void printCategoryData(const double averages[], size_t totalUsers, size_t totalCategories);
 
@@ -213,6 +216,7 @@ int main (void) {
 		// Print to file if rental mode is done and sentinel value is entered
 		if (rentalContinue != true) {
 			if (headMainPropertyPtr != NULL) {
+				// Print all properties owner entered
 				Property* propertyToPrint = headMainPropertyPtr;
 
 				while (propertyToPrint != NULL) {
@@ -223,12 +227,17 @@ int main (void) {
 					// Create full path of where .txt should be located
 					strcat(fullPath, filePath);
 
+					// Print and calculate final information for every property
+					printFinalPropertyInfo(propertyToPrint, surveyCategories, RENTER_SURVEY_CATEGORIES);
+
 					// Print final property info to file
 					puts("Printing to file");
 					printPropertyToFile(propertyToPrint, fullPath, surveyCategories, RENTER_SURVEY_CATEGORIES);
 
+					// Get next property to print
 					propertyToPrint = propertyToPrint->nextPropertyPtr;
 
+					// Reset full path for next property name
 					strcpy(fullPath, FOLDER_FILE_PATH);
 				}
 
@@ -667,23 +676,6 @@ bool rentalMode(Property* propertyPtr, int minNights, int maxNights, int sentine
 
 		// Rental Mode ends
 		rentalContinue = false;
-		
-		// Print total number of renters, nights booked, and total charge
-		puts("");
-		puts("Rental Property Report");
-		puts("");
-		printf("Property Name: %s\n", propertyPtr->propertyName);
-		printf("Property Location: %s\n", propertyPtr->propertyLocation);
-		puts("");
-		printf("Total number of renters: %d\n", propertyPtr->currentUser);
-		printf("Total number of nights: %d\n", propertyPtr->totalNights);
-		printf("Total number of charges: $%.2f\n", propertyPtr->totalCharge);
-
-		// Calculate and print category averages
-		calculateCategoryAverages(propertyPtr->averages, propertyPtr->survey, propertyPtr->currentUser, maxCategories);
-		printCategories(categories, maxCategories);
-		printCategoryData(propertyPtr->averages, propertyPtr->currentUser, maxCategories);
-		puts("");
 	}
 	// If valid night was entered and it the property has room, caculate charge and get rating
 	else if (validNight == true && propertyPtr->currentUser < maxRenters) {
@@ -905,6 +897,30 @@ void printCategoryData(const double averages[], size_t totalUsers, size_t totalC
 		// Print the average for the category
 		printf("%27.1f", averages[category]);
 	}
+}
+
+/*
+Purpose: Calculate and print the final information for the properties
+Parameters: pointer to a property, array of categories, and max number of categories
+Return: Does not return a value, but calculates and prints several values
+*/
+void printFinalPropertyInfo(Property* propertyPtr , const char* categories[], int maxCategories) {
+	// Print total number of renters, nights booked, and total charge
+	puts("");
+	puts("Rental Property Report");
+	puts("");
+	printf("Property Name: %s\n", propertyPtr->propertyName);
+	printf("Property Location: %s\n", propertyPtr->propertyLocation);
+	puts("");
+	printf("Total number of renters: %d\n", propertyPtr->currentUser);
+	printf("Total number of nights: %d\n", propertyPtr->totalNights);
+	printf("Total number of charges: $%.2f\n", propertyPtr->totalCharge);
+
+	// Calculate and print category averages
+	calculateCategoryAverages(propertyPtr->averages, propertyPtr->survey, propertyPtr->currentUser, maxCategories);
+	printCategories(categories, maxCategories);
+	printCategoryData(propertyPtr->averages, propertyPtr->currentUser, maxCategories);
+	puts("");
 }
 
 /*
