@@ -219,6 +219,7 @@ int main (void) {
 				// Print all properties owner entered
 				Property* propertyToPrint = headMainPropertyPtr;
 
+				// While the pointer is not null, print the next property
 				while (propertyToPrint != NULL) {
 					// Create name of .txt file
 					strcpy(filePath, propertyToPrint->propertyName);
