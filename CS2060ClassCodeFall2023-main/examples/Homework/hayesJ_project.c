@@ -38,12 +38,12 @@ with the name of the property selected in folder called fundraiser. The program 
 
 // Two dimensional array storage amounts for rows and columns of survey data
 #define VACATION_RENTERS 5
-#define RENTER_SURVEY_CATEGORIES 3
+#define RENTER_SURVEY_CATEGORIES 4
 
 // Rental property login and sentinal values
-#define CORRECT_ID "id1"
-#define CORRECT_PASSCODE "abcd"
-#define LOGIN_MAX_ATTEMPTS 3
+#define CORRECT_ID "id"
+#define CORRECT_PASSCODE "ab"
+#define LOGIN_MAX_ATTEMPTS 2
 #define SENTINEL_NEG1 -1
 
 // Rental property constant ranges
@@ -173,7 +173,7 @@ int main (void) {
 
 	char userContinue = ' ';
 	bool rentalContinue = true;
-	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities" };
+	const char* surveyCategories[RENTER_SURVEY_CATEGORIES] = { "Check-in Process", "Cleanliness", "Amenities", "cat4"};
 	Property* selectedProperty = NULL;
 	char filePath[STRING_LENGTH];
 	char fullPath[STRING_LENGTH];
