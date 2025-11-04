@@ -965,7 +965,7 @@ void printPropertyToFile(Property* propertyPtr, char path[], const char* categor
 		fprintf(fPtr, "Total Charge: $%.2f\n", propertyPtr->totalCharge);
 
 		fputs(" \n", fPtr);
-		fputs("Category Rating Averges\n", fPtr);
+		fputs("Category Rating Averages\n", fPtr);
 		for (size_t category = 0; category < maxCategories; category++) {
 			fprintf(fPtr, "%s: %.1f\n", categories[category], propertyPtr->averages[category]);
 		}
